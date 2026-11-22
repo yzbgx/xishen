@@ -98,3 +98,24 @@ tasks.named("vscode") {
 		}
 	}
 }
+
+// --- 给 VS Code 调试用的 classpath 导出 -----------------------------------
+// IDE 的 Java 工程导入在 Gradle 9.8 + 旧版 Buildship 下会失败，
+// 所以这里直接导出完整客户端/服务端 classpath，让 launch.json 用 classPaths 启动、不依赖工程导入。
+def clientRuntimeClasspath = sourceSets.client.runtimeClasspath
+def serverRuntimeClasspath = sourceSets.main.runtimeClasspath
+def clientClasspathFile = file("$buildDir/client-classpath.txt")
+def serverClasspathFile = file("$buildDir/server-classpath.txt")
+tasks.register("printClientClasspath") {
+	doLast {
+		def files = clientRuntimeClasspath.files
+		clientClasspathFile.parentFile.mkdirs()
+		clientClasspathFile.write(files.collect { it.absolutePath }.join("\n"), "UTF-8")
+		println "client classpath entries: ${files.size()} -> ${clientClasspathFile}"
+
+		def serverFiles = serverRuntimeClasspath.files
+		serverClasspathFile.parentFile.mkdirs()
+		serverClasspathFile.write(serverFiles.collect { it.absolutePath }.join("\n"), "UTF-8")
+		println "server classpath entries: ${serverFiles.size()} -> ${serverClasspathFile}"
+	}
+}

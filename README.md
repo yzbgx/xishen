@@ -180,6 +180,10 @@ VS Code 里也可以 `Ctrl+Shift+P` → `Tasks: Run Task` → `MC mod: build（�
 
 按 **F5** → 选 `MC mod: 客户端`（或 `MC mod: 服务端`）。日志里会看到 `戏神（xishen）已加载`。
 
+> F5 的 launch.json 里用的是 `classPaths`（由 `gradlew printClientClasspath` 从 Gradle 导出的完整 classpath），
+> 不依赖 VS Code 的 Java 工程导入——因为 Loom 1.19 要求 Gradle ≥9.8，而 Java 扩展自带的 Gradle 读取器只支持到 9.7.1，工程导入会失败。
+> **如果以后加了新依赖**（`build.gradle` 里新增 mod 依赖），先跑一次 `.\gradlew.bat printClientClasspath`，再重新生成 launch.json。
+
 **看 Minecraft 源码**
 
 ```powershell
