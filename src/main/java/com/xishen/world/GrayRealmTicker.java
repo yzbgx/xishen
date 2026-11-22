@@ -55,6 +55,14 @@ public final class GrayRealmTicker {
 		return entity.getType().is(GRAY_IMMUNE) || entity.getTags().contains(IMMUNE_SCOREBOARD_TAG);
 	}
 
+	/** 取出这个世界正在用的布局（由 biome source 在生成区块时创建） */
+	private static GrayRealmLayout layoutOf(ServerLevel level) {
+		if (level.getChunkSource().getGenerator().getBiomeSource() instanceof GrayRealmBiomeSource source) {
+			return source.layout();
+		}
+		return null;
+	}
+
 	public static void init() {
 		ServerTickEvents.END_WORLD_TICK.register(GrayRealmTicker::onWorldTick);
 	}
@@ -68,6 +76,11 @@ public final class GrayRealmTicker {
 			return;
 		}
 
+		GrayRealmLayout worldLayout = layoutOf(level);
+		if (worldLayout == null) {
+			return;
+		}
+
 		for (Entity entity : level.getAllEntities()) {
 			if (!(entity instanceof LivingEntity living) || !living.isAlive()) {
 				continue;
@@ -78,7 +91,7 @@ public final class GrayRealmTicker {
 			}
 			double x = living.getX();
 			double z = living.getZ();
-			int level0 = GrayRealmRegions.erosionLevel(x, z);
+			int level0 = worldLayout.erosionLevel(x, z);
 
 			living.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(XishenMod.GRAY_EROSION),
 					REFRESH_DURATION, level0, true, false, true));

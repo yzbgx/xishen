@@ -73,7 +73,8 @@ MC mod\
 | --- | --- |
 | `src\main\java\com\xishen\XishenMod.java` | 主入口：注册状态效果、启动灰界环境驱动 |
 | `src\main\java\com\xishen\effect\GrayErosionEffect.java` | 「灰蚀」效果本体：每 2 秒按等级扣血，走自定义伤害类型 |
-| `src\main\java\com\xishen\world\GrayRealmRegions.java` | 灰界区域坐标（圆心+半径）、灰雾带/边缘判定、侵蚀等级公式 |
+| `src\main\java\com\xishen\world\GrayRealmRegions.java` | 区域规格表（半径区间、是否固定在原点）+ 地图半径等常量 |
+| `src\main\java\com\xishen\world\GrayRealmLayout.java` | 按世界种子生成布局：区域位置/大小/不规则形状、灰雾带与边界判定、灰蚀等级公式 |
 | `src\main\java\com\xishen\world\GrayRealmTicker.java` | 每秒扫描灰界里的活物，按坐标挂灰蚀/失明/黑暗；免疫判定也在这里 |
 | `src\client\java\com\xishen\client\XishenClient.java` | 客户端入口（以后做按键、HUD、渲染） |
 | `src\main\resources\data\xishen\...` | 纯数据：维度、群系、地形、伤害类型、标签（改 JSON 就能调数值/范围，不用写 Java） |
@@ -104,12 +105,13 @@ MC mod\
 | 群系分配器 | `xishen:gray_realm`（自定义 BiomeSource） | `com.xishen.world.GrayRealmBiomeSource` |
 | 地形噪声 | `xishen:gray_realm` | `data/xishen/worldgen/noise_settings/gray_realm.json` |
 
-设计要点（按你的要求：**区域位置固定，区域内地形随机**，像末地主岛那样位置固定、但地形细节每次不同）：
+设计要点（按你的要求：**区域位置每个世界随机、但挤成一团不碎开；区域内地形随机**）：
 
 - **整片灰界是一个维度**，区域之间靠坐标分隔（不是每个区域一个维度），以后加「鬼嘲深渊 / 苦肉浊林 / 叹息旷野 / 虚妄山脉 / 风暴孤岛」只是往同一个维度里加区域。
-- **每个区域 = 一个群系**，区域是"地图上的一个个地点"（不是同心圆）：`GrayRealmRegions.REGIONS` 里每个区域有自己的圆心和半径，现在只有禁忌之海（圆心 0,0，半径 600）。
-- 区域之外、灰界范围之内（离地图中心 3000 格内）全部是**常规灰雾带** `xishen:gray_fog`——也就是"区域与区域之间的连接地带"；超出 3000 格是**边界灰雾带** `xishen:gray_fog_edge`（雾最浓、伤害最高）。
-- 以后加「鬼嘲深渊 / 苦肉浊林 / 叹息旷野 / 虚妄山脉 / 风暴孤岛」时，只要在 `REGIONS` 里加各自的坐标半径，它们之间的空地自动成为灰雾带，判定逻辑不用改。
+- **每个区域 = 一个群系**，位置**每个世界随机**（不是固定地图，也不是同心圆）：`GrayRealmLayout` 按世界种子生成布局——区域挤成一团、彼此相邻（不碎开），大小在 `GrayRealmRegions.SPECS` 给的区间里随机，边界用低频噪声扰动成不规则形状。
+- **禁忌之海永远以 (0,0) 为中心**（`Spec.pinnedAtOrigin = true`）；其它区域以后按环状随机摆放（`RING_MIN`~`RING_MAX`）。
+- 区域之外、灰界范围之内（离地图中心 3000 格内）全部是**常规灰雾带** `xishen:gray_fog`——也就是"实体区域以外的不规则空地"；超出 3000 格是**边界灰雾带** `xishen:gray_fog_edge`（雾最浓、伤害最高）。
+- 加新区域：`GrayRealmRegions.SPECS` 加一条规格 + `dimension/gray_realm.json` 的 `regions` 表里配群系；原书特别点明的形状（如鬼嘲深渊是巨大峡谷）以后在 `GrayRealmLayout` 里按 id 特判拉伸。
 - **地形用噪声随机生成**（抄的原版 overworld 噪声路由器），所以每次开新世界，海床起伏、岛屿形状都不一样。
 - 海平面抬到 **96**，绝大部分地形被水淹没，只剩零星岛屿；海底是砾石，岛屿表层是凝灰岩 / 安山岩（灰界配色）。
 - 时间固定在**午夜**（`fixed_time: 18000`）、环境光偏暗、床会爆炸（`bed_works: false`）、没有袭击。
@@ -134,7 +136,7 @@ MC mod\
 | 常规灰雾带 | 区域外、灰界半径 3000 内 | 1 起，离区域越远越高（最高 3） | 2 ~ 4 | **失明** |
 | 边界灰雾带 | 超出灰界半径 3000 后 | 4 起，每 200 格 +1，最高 8 | 5 ~ 9 | **失明 + 黑暗**（更浓的雾，参考虚空） |
 
-布局在 `com.xishen.world.GrayRealmRegions`：`REGIONS` 里是各区域的坐标+半径，`WORLD_RADIUS = 3000` 是灰界的地图半径，两个都能直接改。
+布局算法在 `com.xishen.world.GrayRealmLayout`（按世界种子生成位置/大小/不规则形状），区域规格在 `GrayRealmRegions.SPECS`（含半径区间、是否固定在原点），`WORLD_RADIUS = 3000` 是灰界地图半径。
 
 **谁免疫**（你要的「灰界生物 / 神道领域不受伤」）现在有两个钩子：
 
