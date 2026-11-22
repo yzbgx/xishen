@@ -29,7 +29,7 @@
 
 - `.vscode\launch.json`：F5 启动 `MC mod: 客户端` / `MC mod: 服务端`
 - `.vscode\tasks.json`：`MC mod: build / runClient / runServer / genSources / refresh-vscode`
-- `.vscode\settings.json`：JDK 21/25 注册、Gradle 用 JDK 25、排除 `FtcRobotController-10.1.1`
+- `.vscode\settings.json`：JDK 21/25 注册、Gradle 用 JDK 25、排除 `FtcRobotController-10.1.1`、文件编码 UTF-8、Java 语言服务器 `-Dfile.encoding=UTF-8`
 
 ---
 
@@ -257,9 +257,11 @@ VS Code 里也可以 `Ctrl+Shift+P` → `Tasks: Run Task` → `MC mod: build（�
 
 **4. `settings.gradle` 报 `Unexpected character: '\ufeff'`** → 文件带 BOM 了，用 VS Code 右下角改成 UTF-8 另存。
 
-**5. 换了地形/方块，但老存档里没变化** → 地形和群系颜色是生成时写进存档的，改代码不会重写既有区块；想看到新效果要**新建世界**。
+**5. 鼠标悬停的 Javadoc/提示里中文是乱码** → Java 语言服务器按系统默认编码（GBK）读源码。已在 `.vscode\settings.json` 里加 `"java.jdt.ls.vmargs": "-Dfile.encoding=UTF-8 -Xmx1G"`，改完要 **Reload Window** 才生效。
 
-**6. 物品紫黑方块 / 名字显示成键名** → 模型文件名或 `textures` 路径不对、贴图不是 16×16；或 `lang` 里缺键。
+**6. 换了地形/方块，但老存档里没变化** → 地形和群系颜色是生成时写进存档的，改代码不会重写既有区块；想看到新效果要**新建世界**。
+
+**7. 物品紫黑方块 / 名字显示成键名** → 模型文件名或 `textures` 路径不对、贴图不是 16×16；或 `lang` 里缺键。
 
 ---
 

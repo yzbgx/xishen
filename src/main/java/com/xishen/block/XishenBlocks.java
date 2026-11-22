@@ -6,10 +6,6 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -75,7 +71,4 @@ public final class XishenBlocks {
 		Registry.register(BuiltInRegistries.ITEM, XishenMod.id(name), new BlockItem(block, new Item.Properties()));
 	}
 
-	/** 给方块补需要的标签（挖得动/掉落需要工具） */
-	public static void registerTags() {
-	}
 }
