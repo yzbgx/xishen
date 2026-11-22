@@ -98,14 +98,18 @@ MC mod\
 | --- | --- | --- |
 | 维度 | `xishen:gray_realm` | `data/xishen/dimension/gray_realm.json` |
 | 维度类型 | `xishen:gray_realm` | `data/xishen/dimension_type/gray_realm.json` |
-| 生物群系 | `xishen:forbidden_sea`（禁忌之海） | `data/xishen/worldgen/biome/forbidden_sea.json` |
+| 群系·区域 | `xishen:forbidden_sea`（禁忌之海） | `data/xishen/worldgen/biome/forbidden_sea.json` |
+| 群系·常规灰雾带 | `xishen:gray_fog`（灰雾带） | `data/xishen/worldgen/biome/gray_fog.json` |
+| 群系·边界灰雾带 | `xishen:gray_fog_edge`（边界灰雾带） | `data/xishen/worldgen/biome/gray_fog_edge.json` |
+| 群系分配器 | `xishen:gray_realm`（自定义 BiomeSource） | `com.xishen.world.GrayRealmBiomeSource` |
 | 地形噪声 | `xishen:gray_realm` | `data/xishen/worldgen/noise_settings/gray_realm.json` |
 
 设计要点（按你的要求：**区域位置固定，区域内地形随机**，像末地主岛那样位置固定、但地形细节每次不同）：
 
 - **整片灰界是一个维度**，区域之间靠坐标分隔（不是每个区域一个维度），以后加「鬼嘲深渊 / 苦肉浊林 / 叹息旷野 / 虚妄山脉 / 风暴孤岛」只是往同一个维度里加区域。
+- **每个区域 = 一个群系**；区域外面两圈各是一个群系：**常规灰雾带** `xishen:gray_fog`、**边界灰雾带** `xishen:gray_fog_edge`。
+  群系由自定义 `GrayRealmBiomeSource` 按"到区域圆心的距离"分配：半径 600 内是区域，600~800 是常规灰雾带，800 以外是边界灰雾带。
 - **地形用噪声随机生成**（抄的原版 overworld 噪声路由器），所以每次开新世界，海床起伏、岛屿形状都不一样。
-- 当前只有禁忌之海一个群系，`biome_source` 是 `fixed`，整片维度都是海；以后加区域时换成按坐标分区的噪声源或自定义 biome source。
 - 海平面抬到 **96**，绝大部分地形被水淹没，只剩零星岛屿；海底是砾石，岛屿表层是凝灰岩 / 安山岩（灰界配色）。
 - 时间固定在**午夜**（`fixed_time: 18000`）、环境光偏暗、床会爆炸（`bed_works: false`）、没有袭击。
 - **没有任何生物、植被、矿物、结构**（`spawners` 全空、`features` 全空、`disable_mob_generation: true`）——按你的要求，生物和传送门等你发话再加。
@@ -137,6 +141,24 @@ MC mod\
    以后加灰界生物时把它们的实体 id 填进 `values` 即可，它们就完全不吃灰蚀。
 2. **scoreboard tag** `xishen_gray_immune` —— 给玩家/生物打上这个标签就免疫，例如
    `/tag @s add xishen_gray_immune`。这是给"拥有神道领域的玩家"预留的接口，等做神道系统时由你的代码自动打标签。
+
+### ⚠️ 加灰界生物时的检查清单（我以后会提醒你）
+
+每加一个"灰界原生的生物"，记得同时做这三件事，否则它会被自己的世界侵蚀死：
+
+- [ ] 在 `data/xishen/tags/entity_type/gray_realm_immune.json` 的 `values` 里加上它的实体 id
+- [ ] 在 `assets/xishen/lang/zh_cn.json`、`en_us.json` 里加 `entity.xishen.<名字>` 显示名
+- [ ] 染色/刷怪蛋/生成规则（`spawners`）如果要做，也要一起加
+
+**这套流程我会记着：以后你说"加一个灰界生物"时，我会主动提醒你补免疫标签。**
+
+### 怎么看生成的贴图
+
+我生成的贴图都在 `src\main\resources\assets\xishen\textures\` 下（物品 `item\`、方块 `block\`、状态效果 `mob_effect\`）。
+
+- **VS Code 里**：点开 `.png` 文件，编辑器直接显示（右下角可放大/缩小，`Ctrl+滚轮`）。
+- **Windows 里**：资源管理器双击即可用照片查看器打开；想看像素细节就用画图放大。
+- **记得**：MC 的物品/方块贴图是 **16×16**，状态效果图标是 **18×18**，放大后是马赛克颗粒感，属于正常。
 
 ## 四、常用操作
 

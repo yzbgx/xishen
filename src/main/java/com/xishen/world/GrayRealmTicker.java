@@ -4,6 +4,7 @@ import com.xishen.XishenMod;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -15,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 
 /**
  * 灰界的"环境伤害"驱动：每秒给灰界里所有活物挂一次灰蚀。
@@ -39,6 +41,11 @@ public final class GrayRealmTicker {
 	 * 给"拥有神道领域的玩家/生物"预留的钩子 —— 以后用 /tag <实体> add xishen_gray_immune 就能生效。
 	 */
 	public static final String IMMUNE_SCOREBOARD_TAG = "xishen_gray_immune";
+
+	/** 灰界里的三个群系（由 GrayRealmBiomeSource 按坐标分配） */
+	public static final ResourceKey<Biome> REGION_BIOME = ResourceKey.create(Registries.BIOME, XishenMod.id("forbidden_sea"));
+	public static final ResourceKey<Biome> FOG_BIOME = ResourceKey.create(Registries.BIOME, XishenMod.id("gray_fog"));
+	public static final ResourceKey<Biome> EDGE_BIOME = ResourceKey.create(Registries.BIOME, XishenMod.id("gray_fog_edge"));
 
 	/** 每次给多长的持续时间（每秒刷新一次，所以给 60 tick 足够） */
 	private static final int REFRESH_DURATION = 60;
@@ -71,18 +78,19 @@ public final class GrayRealmTicker {
 			}
 			double x = living.getX();
 			double z = living.getZ();
-			GrayRealmRegions.Zone zone = GrayRealmRegions.zoneAt(x, z);
 			int level0 = GrayRealmRegions.erosionLevel(x, z);
 
 			living.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(XishenMod.GRAY_EROSION),
 					REFRESH_DURATION, level0, true, false, true));
 
-			if (zone == GrayRealmRegions.Zone.FOG) {
-				// 灰雾带：失明
-				living.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, REFRESH_DURATION, 0, true, false, true));
-			} else if (zone == GrayRealmRegions.Zone.EDGE) {
-				// 边缘：更浓的雾（原版黑暗效果压暗视野）+ 失明
+			// 用"当前所在的群系"判断视觉压制（群系由 GrayRealmBiomeSource 按坐标划分）
+			Holder<Biome> biome = level.getBiome(living.blockPosition());
+			if (biome.is(EDGE_BIOME)) {
+				// 边界灰雾带：更浓的雾（原版黑暗效果压暗视野）+ 失明
 				living.addEffect(new MobEffectInstance(MobEffects.DARKNESS, REFRESH_DURATION, 0, true, false, true));
+				living.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, REFRESH_DURATION, 0, true, false, true));
+			} else if (biome.is(FOG_BIOME)) {
+				// 常规灰雾带：失明
 				living.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, REFRESH_DURATION, 0, true, false, true));
 			}
 		}

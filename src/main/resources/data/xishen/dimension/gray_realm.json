@@ -4,8 +4,10 @@
     "type": "minecraft:noise",
     "settings": "xishen:gray_realm",
     "biome_source": {
-      "type": "minecraft:fixed",
-      "biome": "xishen:forbidden_sea"
+      "type": "xishen:gray_realm",
+      "region": "xishen:forbidden_sea",
+      "fog_band": "xishen:gray_fog",
+      "edge": "xishen:gray_fog_edge"
     }
   }
 }
