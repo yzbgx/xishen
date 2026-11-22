@@ -1,3 +1,5 @@
 {
-  "biome.xishen.forbidden_sea": "Forbidden Sea"
+  "biome.xishen.forbidden_sea": "Forbidden Sea",
+  "effect.xishen.gray_erosion": "Gray Erosion",
+  "death.attack.gray_erosion": "%1$s was eroded away by the Gray Realm"
 }

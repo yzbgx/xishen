@@ -1,7 +1,12 @@
 package com.xishen;
 
+import com.xishen.effect.GrayErosionEffect;
+import com.xishen.world.GrayRealmTicker;
+
 import net.fabricmc.api.ModInitializer;
 
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 
 import org.slf4j.Logger;
@@ -10,8 +15,10 @@ import org.slf4j.LoggerFactory;
 /**
  * 戏神（Xishen）模组主入口 —— 服务端 + 客户端都会加载。
  *
- * 现在这里是空壳，只保留了模组 id、日志器和 id() 工具方法。
- * 之后要加的物品 / 方块 / 事件都写在这个类的 onInitialize() 里（或另建类，在这里调用）。
+ * 目前注册的东西：
+ *  - 状态效果「灰蚀」（xishen:gray_erosion）：灰界对活物的持续侵蚀，伤害走自定义伤害类型
+ *  - 灰界维度（xishen:gray_realm，纯数据包，见 data/xishen/dimension 等）
+ *  - 灰界环境驱动（GrayRealmTicker）：每秒按坐标给活物挂灰蚀 / 失明 / 黑暗
  */
 public class XishenMod implements ModInitializer {
 	/** 模组 id，和 fabric.mod.json 里的 "id"、资源目录 assets/xishen 保持一致。 */
@@ -22,11 +29,16 @@ public class XishenMod implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+	/** 状态效果：灰蚀 */
+	public static final GrayErosionEffect GRAY_EROSION = new GrayErosionEffect();
+
 	@Override
 	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
+		// 注册状态效果；显示名在 assets/xishen/lang 里（effect.xishen.gray_erosion）
+		Registry.register(BuiltInRegistries.MOB_EFFECT, id("gray_erosion"), GRAY_EROSION);
+
+		// 灰界环境驱动：每秒扫描灰界里的活物并挂效果
+		GrayRealmTicker.init();
 
 		LOGGER.info("戏神（xishen）已加载");
 	}

@@ -67,6 +67,27 @@ MC mod\
 | 合成表/进度 | `src\main\resources\data\xishen\recipe\`、`...\advancement\` |
 | 音效/Ogg | `assets\xishen\sounds\` + `sounds.json` |
 
+### 现在工程的代码地图（想知道某个功能在哪写的就看这张表）
+
+| 文件 | 负责什么 |
+| --- | --- |
+| `src\main\java\com\xishen\XishenMod.java` | 主入口：注册状态效果、启动灰界环境驱动 |
+| `src\main\java\com\xishen\effect\GrayErosionEffect.java` | 「灰蚀」效果本体：每 2 秒按等级扣血，走自定义伤害类型 |
+| `src\main\java\com\xishen\world\GrayRealmRegions.java` | 灰界区域坐标（圆心+半径）、灰雾带/边缘判定、侵蚀等级公式 |
+| `src\main\java\com\xishen\world\GrayRealmTicker.java` | 每秒扫描灰界里的活物，按坐标挂灰蚀/失明/黑暗；免疫判定也在这里 |
+| `src\client\java\com\xishen\client\XishenClient.java` | 客户端入口（以后做按键、HUD、渲染） |
+| `src\main\resources\data\xishen\...` | 纯数据：维度、群系、地形、伤害类型、标签（改 JSON 就能调数值/范围，不用写 Java） |
+| `src\main\resources\assets\xishen\...` | 美术资源：贴图、模型、语言、效果图标 |
+
+### 在 VS Code 里读代码的常用操作
+
+- **打开文件**：左边资源管理器按路径展开，或 `Ctrl+P` 输入文件名（如 `GrayRealmTicker`）直接跳。
+- **跳到定义**：`Ctrl+点击` 类名/方法名，或把光标放上去按 `F12`。
+- **找引用**：右键 → `Find All References`（`Shift+F12`），看某个方法被谁调用了。
+- **看 Minecraft 原版源码**：先跑一次任务 `MC mod: genSources`，之后 `Ctrl+点` `Item`、`Level` 这类类就能进原版源码（官方映射名）。
+- **看某个效果/维度到底注册了什么**：`Ctrl+Shift+F` 全局搜索 `xishen:` 或 `gray_erosion`。
+- **改完怎么生效**：改 Java 要重新 build（`Ctrl+Shift+B`）；只改 `data/` 或 `assets/` 里的 JSON，重新 build 一次即可，不用改代码。
+
 ---
 
 ## 三、灰界维度：禁忌之海（当前进度）
@@ -96,6 +117,26 @@ MC mod\
 ```
 
 落地后如果掉进水里，先 `/gamemode creative` 再飞起来看看地形。
+
+### 灰蚀（灰界的环境伤害）
+
+灰界里**所有原版生物都会持续掉血**，用的是自定义状态效果「**灰蚀**」（`xishen:gray_erosion`），
+不是原版凋零/中毒，伤害也走**自定义伤害类型**，死亡提示是「xxx 在灰界中被侵蚀殆尽」。
+
+| 位置 | 判定（离「实体区域」多远） | 灰蚀等级 | 每次伤害（每 2 秒一次） | 附加效果 |
+| --- | --- | --- | --- | --- |
+| 实体区域 | 半径 600 格以内 | 0 | 1（半颗心） | — |
+| 灰雾带 | 600 ~ 800 格 | 1 | 2 | **失明** |
+| 边缘 | 800 格以外 | 2 起，每远 150 格 +1，最高 8 | 最多 9 | **失明 + 黑暗**（更浓的雾，参考虚空） |
+
+区域定义在 `com.xishen.world.GrayRealmRegions`（中心 (0,0)、半径 600，改这一个常量就能调范围）。
+
+**谁免疫**（你要的「灰界生物 / 神道领域不受伤」）现在有两个钩子：
+
+1. **实体类型标签** `xishen:gray_realm_immune` —— 文件在 `data/xishen/tags/entity_type/gray_realm_immune.json`，
+   以后加灰界生物时把它们的实体 id 填进 `values` 即可，它们就完全不吃灰蚀。
+2. **scoreboard tag** `xishen_gray_immune` —— 给玩家/生物打上这个标签就免疫，例如
+   `/tag @s add xishen_gray_immune`。这是给"拥有神道领域的玩家"预留的接口，等做神道系统时由你的代码自动打标签。
 
 ## 四、常用操作
 
@@ -168,22 +209,29 @@ VS Code 里也可以 `Ctrl+Shift+P` → `Tasks: Run Task` → `MC mod: build（�
 
 ## 七、git 说明
 
-工程初始化过 git，**没有连任何 GitHub 远程仓库，也没有 push 过**。提交作者是占位身份：
+仓库已经连上 GitHub 并推送过：<https://github.com/yzbgx/xishen>（公开仓库，默认分支 `main`）。
 
-```
-mcmod <mcmod@localhost>
-```
+- 提交身份：`LGXXXXXX <862210701@qq.com>`（本地 `git config`，只作用于这个仓库）
+- 远程：`origin = https://github.com/yzbgx/xishen.git`
+- 代理：**这个仓库本地配了** `http.proxy=http://127.0.0.1:7890`。直连 GitHub 会 25 秒起步、经常挂死，所以必须走 Clash；哪天不开 Clash 了，执行 `git config --local --unset http.proxy` 即可去掉。
+- 推送凭据由 Git Credential Manager 保存，不用每次登录。
 
-换成自己的：
+常用命令：
 
 ```powershell
 cd "D:\code\MC mod"
-git config user.name "你的名字"
-git config user.email "你的邮箱"
-git commit --amend --reset-author --no-edit
+git status          # 看改了什么
+git add -A
+git commit -m "说明"
+git push            # 推到 GitHub
 ```
 
-要推 GitHub：建仓库 → `git remote add origin <地址>` → `git push -u origin main`。
+改显示名/邮箱：
+
+```powershell
+git config user.name "LGXXXXXX"
+git config user.email "862210701@qq.com"
+```
 
 ## 许可
 

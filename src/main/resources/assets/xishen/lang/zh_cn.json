@@ -1,3 +1,5 @@
 {
-  "biome.xishen.forbidden_sea": "禁忌之海"
+  "biome.xishen.forbidden_sea": "禁忌之海",
+  "effect.xishen.gray_erosion": "灰蚀",
+  "death.attack.gray_erosion": "%1$s 在灰界中被侵蚀殆尽"
 }
