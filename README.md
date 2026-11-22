@@ -267,7 +267,12 @@ VS Code 里也可以 `Ctrl+Shift+P` → `Tasks: Run Task` → `MC mod: build（�
 
 **6. 换了地形/方块，但老存档里没变化** → 地形和群系颜色是生成时写进存档的，改代码不会重写既有区块；想看到新效果要**新建世界**。
 
-**7. 物品紫黑方块 / 名字显示成键名** → 模型文件名或 `textures` 路径不对、贴图不是 16×16；或 `lang` 里缺键。
+**7. 右下角弹 `Can't use Java 25 and Gradle 8.9 to import Gradle project FtcRobotController-10.1.1`**
+   → 这是在说你**另一个工程**（FTC 机器人控制器的 Android 工程），跟戏神无关。
+   原因：工作区把 `java.import.gradle.java.home` 统一设成了 JDK 25（戏神的 Loom 要求），而 FTC 用的 Gradle 8.9 跑不动 Java 25。
+   **可以不管**，点右上角 × 关掉即可；想彻底不提示，就在设置里关掉 Gradle 自动探测（`"gradle.autoDetect": "off"`），但那样戏神的 Gradle 视图也没了。
+
+**8. 物品紫黑方块 / 名字显示成键名** → 模型文件名或 `textures` 路径不对、贴图不是 16×16；或 `lang` 里缺键。
 
 ---
 
