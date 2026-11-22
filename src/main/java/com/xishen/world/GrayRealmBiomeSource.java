@@ -1,5 +1,6 @@
 package com.xishen.world;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -10,39 +11,41 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Climate;
 
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * 灰界专用 biome source：按坐标把维度切成三圈。
+ * 灰界专用 biome source：按"地图坐标"分配群系。
  *
- * 区域位置固定（GrayRealmRegions 里的圆心+半径），所以群系也是固定几何：
- *   半径内      → 区域群系（现在是 禁忌之海 xishen:forbidden_sea）
- *   半径 ~ +200 → 常规灰雾带 xishen:gray_fog
- *   再往外      → 边界灰雾带 xishen:gray_fog_edge（更浓的雾，伤害更高）
+ *   - 命中 GrayRealmRegions 里某个区域 → 用 regions 表里该区域对应的群系
+ *   - 不在任何区域、但在灰界范围内 → 常规灰雾带
+ *   - 超出灰界范围（WORLD_RADIUS 外） → 边界灰雾带
  *
- * 在 dimension JSON 里这样引用：
+ * dimension JSON 里的写法：
  *   "biome_source": {
  *     "type": "xishen:gray_realm",
- *     "region": "xishen:forbidden_sea",
+ *     "regions": { "forbidden_sea": "xishen:forbidden_sea" },
  *     "fog_band": "xishen:gray_fog",
  *     "edge": "xishen:gray_fog_edge"
  *   }
  *
- * 以后加新区域时，改 GrayRealmRegions.REGIONS 的比例逻辑即可（多区域再扩展这里的选择逻辑）。
+ * 以后加区域：在 GrayRealmRegions.REGIONS 里加地点，再往 regions 表里加 "区域id": "群系id"。
  */
 public class GrayRealmBiomeSource extends BiomeSource {
 	public static final MapCodec<GrayRealmBiomeSource> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			RegistryFixedCodec.create(Registries.BIOME).fieldOf("region").forGetter(source -> source.region),
+			Codec.unboundedMap(Codec.STRING, RegistryFixedCodec.create(Registries.BIOME))
+					.fieldOf("regions").forGetter(source -> source.regionBiomes),
 			RegistryFixedCodec.create(Registries.BIOME).fieldOf("fog_band").forGetter(source -> source.fogBand),
 			RegistryFixedCodec.create(Registries.BIOME).fieldOf("edge").forGetter(source -> source.edge)
 	).apply(instance, GrayRealmBiomeSource::new));
 
-	private final Holder<Biome> region;
+	/** 区域 id → 该区域的群系 */
+	private final Map<String, Holder<Biome>> regionBiomes;
 	private final Holder<Biome> fogBand;
 	private final Holder<Biome> edge;
 
-	public GrayRealmBiomeSource(Holder<Biome> region, Holder<Biome> fogBand, Holder<Biome> edge) {
-		this.region = region;
+	public GrayRealmBiomeSource(Map<String, Holder<Biome>> regionBiomes, Holder<Biome> fogBand, Holder<Biome> edge) {
+		this.regionBiomes = Map.copyOf(regionBiomes);
 		this.fogBand = fogBand;
 		this.edge = edge;
 	}
@@ -54,7 +57,7 @@ public class GrayRealmBiomeSource extends BiomeSource {
 
 	@Override
 	protected Stream<Holder<Biome>> collectPossibleBiomes() {
-		return Stream.of(this.region, this.fogBand, this.edge);
+		return Stream.concat(this.regionBiomes.values().stream(), Stream.of(this.fogBand, this.edge));
 	}
 
 	@Override
@@ -62,13 +65,16 @@ public class GrayRealmBiomeSource extends BiomeSource {
 		// 参数是"四分坐标"，乘 4 得到方块坐标
 		double blockX = quartX << 2;
 		double blockZ = quartZ << 2;
-		double distance = GrayRealmRegions.distanceOutside(blockX, blockZ);
-		if (distance <= 0.0) {
-			return this.region;
+
+		GrayRealmRegions.Region region = GrayRealmRegions.regionAt(blockX, blockZ);
+		if (region != null) {
+			Holder<Biome> biome = this.regionBiomes.get(region.id());
+			if (biome != null) {
+				return biome;
+			}
 		}
-		if (distance <= GrayRealmRegions.FOG_WIDTH) {
-			return this.fogBand;
-		}
-		return this.edge;
+		return GrayRealmRegions.distanceFromCenter(blockX, blockZ) <= GrayRealmRegions.WORLD_RADIUS
+				? this.fogBand
+				: this.edge;
 	}
 }
