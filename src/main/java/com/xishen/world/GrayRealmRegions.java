@@ -26,7 +26,7 @@ public final class GrayRealmRegions {
 	public record Spec(String id, boolean pinnedAtOrigin, double radiusMin, double radiusMax) {
 	}
 
-	/** 目前只有禁忌之海；以后加鬼嘲深渊等，往这里加一条即可 */
+	/** 设定区域 */
 	public static final List<Spec> SPECS = List.of(
 			new Spec("forbidden_sea", true, 550.0, 800.0),
 			new Spec("ghost_abyss", false, 450.0, 700.0));
