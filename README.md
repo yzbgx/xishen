@@ -75,6 +75,7 @@ MC mod\
 | `src\main\java\com\xishen\effect\GrayErosionEffect.java` | 「灰蚀」效果本体：每 2 秒按等级扣血，走自定义伤害类型 |
 | `src\main\java\com\xishen\world\GrayRealmRegions.java` | 区域规格表（半径区间、是否固定在原点）+ 地图半径等常量 |
 | `src\main\java\com\xishen\world\GrayRealmLayout.java` | 按世界种子生成布局：区域位置/大小/不规则形状、灰雾带与边界判定、灰蚀等级公式 |
+| `src\main\java\com\xishen\world\GrayRealmChunkGenerator.java` | 地形生成器：按区域后处理地形——禁忌之海保水，灰雾带抽干成灰黑荒原 |
 | `src\main\java\com\xishen\world\GrayRealmTicker.java` | 每秒扫描灰界里的活物，按坐标挂灰蚀/失明/黑暗；免疫判定也在这里 |
 | `src\client\java\com\xishen\client\XishenClient.java` | 客户端入口（以后做按键、HUD、渲染） |
 | `src\main\resources\data\xishen\...` | 纯数据：维度、群系、地形、伤害类型、标签（改 JSON 就能调数值/范围，不用写 Java） |
@@ -114,6 +115,7 @@ MC mod\
 - 加新区域：`GrayRealmRegions.SPECS` 加一条规格 + `dimension/gray_realm.json` 的 `regions` 表里配群系；原书特别点明的形状（如鬼嘲深渊是巨大峡谷）以后在 `GrayRealmLayout` 里按 id 特判拉伸。
 - **地形用噪声随机生成**（抄的原版 overworld 噪声路由器），所以每次开新世界，海床起伏、岛屿形状都不一样。
 - 海平面抬到 **96**，绝大部分地形被水淹没，只剩零星岛屿；海底是砾石，岛屿表层是凝灰岩 / 安山岩（灰界配色）。
+- **地形按区域区分**（`GrayRealmChunkGenerator`）：禁忌之海区域里保留海水；**灰雾带里海水被抽干**，换成灰黑荒原（凝灰岩/黑石/玄武岩/砂砾，带 0~2 格起伏）——走出区域时眼前从"海"变成"干涸荒原"，边界一眼可辨。
 - 时间固定在**午夜**（`fixed_time: 18000`）、环境光偏暗、床会爆炸（`bed_works: false`）、没有袭击。
 - **没有任何生物、植被、矿物、结构**（`spawners` 全空、`features` 全空、`disable_mob_generation: true`）——按你的要求，生物和传送门等你发话再加。
 
