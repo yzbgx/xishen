@@ -1,7 +1,7 @@
 {
   "type": "xishen:gray_realm",
   "generator": {
-    "type": "minecraft:noise",
+    "type": "xishen:gray_realm",
     "settings": "xishen:gray_realm",
     "biome_source": {
       "type": "xishen:gray_realm",

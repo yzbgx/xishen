@@ -2,6 +2,7 @@ package com.xishen;
 
 import com.xishen.effect.GrayErosionEffect;
 import com.xishen.world.GrayRealmBiomeSource;
+import com.xishen.world.GrayRealmChunkGenerator;
 import com.xishen.world.GrayRealmTicker;
 
 import net.fabricmc.api.ModInitializer;
@@ -40,6 +41,8 @@ public class XishenMod implements ModInitializer {
 
 		// 注册灰界专用 biome source：按坐标划分 区域 / 常规灰雾带 / 边界灰雾带
 		Registry.register(BuiltInRegistries.BIOME_SOURCE, id("gray_realm"), GrayRealmBiomeSource.CODEC);
+		// 注册灰界地形生成器：按区域后处理地形（禁忌之海=海，灰雾带=干涸荒原）
+		Registry.register(BuiltInRegistries.CHUNK_GENERATOR, id("gray_realm"), GrayRealmChunkGenerator.CODEC);
 
 		// 灰界环境驱动：每秒扫描灰界里的活物并挂效果
 		GrayRealmTicker.init();
