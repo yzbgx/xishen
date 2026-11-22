@@ -8,10 +8,10 @@
   },
   "downfall": 0.6,
   "effects": {
-    "fog_color": 657165,
-    "sky_color": 1776929,
-    "water_color": 662052,
-    "water_fog_color": 198668,
+    "fog_color": 657930,
+    "sky_color": 1776411,
+    "water_color": 2763306,
+    "water_fog_color": 1315860,
     "mood_sound": {
       "block_search_extent": 8,
       "offset": 2.0,

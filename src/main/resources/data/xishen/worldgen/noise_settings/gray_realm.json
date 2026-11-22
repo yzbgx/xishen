@@ -1,7 +1,7 @@
 {
   "aquifers_enabled": true,
   "default_block": {
-    "Name": "minecraft:stone"
+    "Name": "xishen:gray_stone"
   },
   "default_fluid": {
     "Name": "minecraft:water",
@@ -406,7 +406,7 @@
           "then_run": {
             "type": "minecraft:block",
             "result_state": {
-              "Name": "minecraft:gravel"
+              "Name": "xishen:gray_gravel"
             }
           }
         }
@@ -423,7 +423,7 @@
         "then_run": {
           "type": "minecraft:block",
           "result_state": {
-            "Name": "minecraft:tuff"
+            "Name": "xishen:gray_dirt"
           }
         }
       },
@@ -439,7 +439,7 @@
         "then_run": {
           "type": "minecraft:block",
           "result_state": {
-            "Name": "minecraft:andesite"
+            "Name": "xishen:gray_stone"
           }
         }
       }

@@ -127,7 +127,7 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 		ChunkPos chunkPos = chunk.getPos();
 		int seaLevel = getSeaLevel();
 		int minY = chunk.getMinBuildHeight();
-		BlockState ash = Blocks.BLACKSTONE.defaultBlockState();
+		BlockState fill = XishenBlocks.GRAY_STONE.defaultBlockState();
 		BlockState grass = XishenBlocks.GRAY_GRASS_BLOCK.defaultBlockState();
 		BlockState dirt = XishenBlocks.GRAY_DIRT.defaultBlockState();
 
@@ -138,9 +138,7 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 				if (layout.regionIdAt(x, z) != null) {
 					continue; // 禁忌之海：保留海水
 				}
-				if (GrayRealmLayout.distanceFromCenter(x, z) > GrayRealmRegions.WORLD_RADIUS) {
-					continue; // 边界灰雾带：暂不处理
-				}
+
 				int top = seaLevel + hillHeight(x, z);
 
 				// 抽干：海平面以下的水、以及垫高出来的空气，全部换成黑石
@@ -148,7 +146,7 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 					BlockPos pos = new BlockPos(x, y, z);
 					BlockState state = chunk.getBlockState(pos);
 					if (state.is(Blocks.WATER) || (y > seaLevel && state.isAir())) {
-						chunk.setBlockState(pos, ash, false);
+						chunk.setBlockState(pos, fill, false);
 					}
 				}
 				// 表层：灰草 + 3 层灰土

@@ -1,6 +1,7 @@
 package com.xishen;
 
 import com.xishen.block.XishenBlocks;
+import com.xishen.effect.GrayErosionEdgeEffect;
 import com.xishen.effect.GrayErosionEffect;
 import com.xishen.world.GrayRealmBiomeSource;
 import com.xishen.world.GrayRealmChunkGenerator;
@@ -35,10 +36,14 @@ public class XishenMod implements ModInitializer {
 	/** 状态效果：灰蚀 */
 	public static final GrayErosionEffect GRAY_EROSION = new GrayErosionEffect();
 
+	/** 状态效果：灰蚀：边界（无视豁免，强制侵蚀） */
+	public static final GrayErosionEdgeEffect GRAY_EROSION_EDGE = new GrayErosionEdgeEffect();
+
 	@Override
 	public void onInitialize() {
 		// 注册状态效果；显示名在 assets/xishen/lang 里（effect.xishen.gray_erosion）
 		Registry.register(BuiltInRegistries.MOB_EFFECT, id("gray_erosion"), GRAY_EROSION);
+		Registry.register(BuiltInRegistries.MOB_EFFECT, id("gray_erosion_edge"), GRAY_EROSION_EDGE);
 
 		// 注册灰界专用 biome source：按坐标划分 区域 / 常规灰雾带 / 边界灰雾带
 		Registry.register(BuiltInRegistries.BIOME_SOURCE, id("gray_realm"), GrayRealmBiomeSource.CODEC);

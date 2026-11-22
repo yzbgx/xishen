@@ -3,7 +3,11 @@
   "biome.xishen.gray_fog": "Gray Fog Band",
   "biome.xishen.gray_fog_edge": "Boundary Fog",
   "effect.xishen.gray_erosion": "Gray Erosion",
+  "effect.xishen.gray_erosion_edge": "Gray Erosion: Boundary",
   "death.attack.gray_erosion": "%1$s was eroded away by the Gray Realm",
+  "death.attack.gray_erosion_edge": "%1$s was devoured at the boundary of the Gray Realm",
   "block.xishen.gray_dirt": "Gray Dirt",
-  "block.xishen.gray_grass_block": "Gray Grass Block"
+  "block.xishen.gray_grass_block": "Gray Grass Block",
+  "block.xishen.gray_stone": "Gray Stone",
+  "block.xishen.gray_gravel": "Gray Gravel"
 }
