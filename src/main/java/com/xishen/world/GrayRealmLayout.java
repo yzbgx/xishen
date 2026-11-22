@@ -8,11 +8,14 @@ import java.util.Random;
  * 一个世界里灰界区域的"实际布局"：谁在哪、多大、边界长什么样。
  *
  * 生成规则（按你的设定）：
- *   - 每个世界随机，但区域挤成一团、彼此相邻，不会碎开；
+ *   - 每个世界随机，但**单个区域必须是一整块**（不会碎成几片），区域之间**留出空隙**（空隙就是灰雾带）；
  *   - 禁忌之海永远在 (0,0)；
  *   - 半径在 GrayRealmRegions.SPECS 给的区间里随机；
  *   - 形状不规则：半径乘以一个低频噪声，让边界变成起伏的曲线而不是正圆；
  *     以后原书特别点明的形状（鬼嘲深渊=巨大峡谷）可以在这里按 id 特判拉伸。
+ *
+ * 单块保证：判定用"到区域中心、被噪声扰动后的归一化距离 < 1"，所以每个区域就是一个连通的
+ * 变形圆盘；不在任何区域里的点一律算灰雾带，所以区域之间天然有雾的空隙。
  *
  * 这个对象是不可变的，可以安全地在多个线程/多次调用间复用。
  */
@@ -56,13 +59,29 @@ public final class GrayRealmLayout {
 				cx = 0.0;
 				cz = 0.0;
 			} else {
-				// 其它区域：围成一圈，角度均匀分布 + 抖动，保证彼此相邻又不重叠太多
+				// 其它区域：环状随机摆放；和已摆好的区域保持间隔，保证两块区域之间留出灰雾带
 				double angle = (Math.PI * 2.0) * freeIndex / Math.max(1, freeCount)
 						+ (random.nextDouble() - 0.5) * 0.6;
 				double distance = GrayRealmRegions.RING_MIN
 						+ random.nextDouble() * (GrayRealmRegions.RING_MAX - GrayRealmRegions.RING_MIN);
 				cx = Math.cos(angle) * distance;
 				cz = Math.sin(angle) * distance;
+				// 太挤就往远处挪：确保和已有区域之间至少留 GAP 的空隙
+				for (int attempt = 0; attempt < 12; attempt++) {
+					boolean tooClose = false;
+					for (PlacedRegion other : placed) {
+						double minDistance = radius + other.radius() + GrayRealmRegions.REGION_GAP;
+						if (Math.hypot(cx - other.centerX(), cz - other.centerZ()) < minDistance) {
+							tooClose = true;
+							break;
+						}
+					}
+					if (!tooClose) {
+						break;
+					}
+					cx *= 1.15;
+					cz *= 1.15;
+				}
 				freeIndex++;
 			}
 			placed.add(new PlacedRegion(spec.id(), cx, cz, radius));

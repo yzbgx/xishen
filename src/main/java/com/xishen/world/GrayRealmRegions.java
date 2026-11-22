@@ -39,7 +39,10 @@ public final class GrayRealmRegions {
 	/** 边界灰雾带里：越过地图半径后每 200 格，灰蚀等级 +1（最多 +4） */
 	public static final double EDGE_LEVEL_STEP = 200.0;
 
-	/** 非固定区域的摆放环半径范围（保证区域挤在一起，不碎开） */
+	/** 非固定区域的摆放环半径范围 */
 	public static final double RING_MIN = 1500.0;
 	public static final double RING_MAX = 2200.0;
+
+	/** 两个区域之间至少留出多宽的灰雾带（格） */
+	public static final double REGION_GAP = 350.0;
 }
