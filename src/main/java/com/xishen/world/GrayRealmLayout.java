@@ -90,6 +90,16 @@ public final class GrayRealmLayout {
 		return new GrayRealmLayout(placed, seed * 0x9E3779B97F4A7C15L + 0x1234_5678_9ABC_DEF0L);
 	}
 
+	/** 按 id 找布局里的区域 */
+	public PlacedRegion regionById(String id) {
+		for (PlacedRegion region : this.regions) {
+			if (region.id().equals(id)) {
+				return region;
+			}
+		}
+		return null;
+	}
+
 	/** 该点属于哪个区域（按"半径噪声扰动后的距离"归一化后取最近）；不属于任何区域返回 null */
 	public String regionIdAt(double x, double z) {
 		String best = null;

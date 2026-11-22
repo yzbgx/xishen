@@ -28,7 +28,8 @@ public final class GrayRealmRegions {
 
 	/** 目前只有禁忌之海；以后加鬼嘲深渊等，往这里加一条即可 */
 	public static final List<Spec> SPECS = List.of(
-			new Spec("forbidden_sea", true, 550.0, 800.0));
+			new Spec("forbidden_sea", true, 550.0, 800.0),
+			new Spec("ghost_abyss", false, 450.0, 700.0));
 
 	/** 灰界这张地图的整体半径：超出去就是边界灰雾带 */
 	public static final double WORLD_RADIUS = 3000.0;

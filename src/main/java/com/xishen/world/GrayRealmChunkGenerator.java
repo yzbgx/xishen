@@ -135,8 +135,13 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 			for (int localZ = 0; localZ < 16; localZ++) {
 				int x = chunkPos.getMinBlockX() + localX;
 				int z = chunkPos.getMinBlockZ() + localZ;
-				if (layout.regionIdAt(x, z) != null) {
-					continue; // 禁忌之海：保留海水
+				String regionId = layout.regionIdAt(x, z);
+				if ("ghost_abyss".equals(regionId)) {
+					carveAbyss(chunk, layout, x, z, minY, seaLevel);
+					continue;
+				}
+				if (regionId != null) {
+					continue; // 其它区域（禁忌之海）：保留海水
 				}
 
 				int top = seaLevel + hillHeight(x, z);
@@ -158,6 +163,45 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 		}
 	}
 
+	/**
+	 * 鬼嘲深渊：在区域里挖一个"碗形深渊"。
+	 * 越靠近区域中心越深（最深约 70 格，中心底部 y≈26），按 3 格一台阶做成阶梯状陡壁；
+	 * 底部铺灰土、墙壁和内部是灰石，上方抽成空气（没有水，也没有岛）。
+	 */
+	private void carveAbyss(ChunkAccess chunk, GrayRealmLayout layout, int x, int z, int minY, int seaLevel) {
+		GrayRealmLayout.PlacedRegion abyss = layout.regionById("ghost_abyss");
+		if (abyss == null) {
+			return;
+		}
+		BlockState stone = XishenBlocks.GRAY_STONE.defaultBlockState();
+		BlockState dirt = XishenBlocks.GRAY_DIRT.defaultBlockState();
+		BlockState air = Blocks.AIR.defaultBlockState();
+
+		double distance = Math.hypot(x - abyss.centerX(), z - abyss.centerZ());
+		double ratio = Math.min(1.0, distance / abyss.radius());
+		int depth = (int) Math.round(Math.pow(1.0 - ratio, 1.25) * 70.0);
+		int floor = seaLevel - (depth / 3) * 3;   // 3 格一个台阶
+
+		// 坑底以下：只补 8 格（再往下本来就是实心，没必要整列重写，省性能）
+		for (int y = Math.max(minY, floor - 8); y <= floor; y++) {
+			BlockPos pos = new BlockPos(x, y, z);
+			if (!chunk.getBlockState(pos).isSolid()) {
+				chunk.setBlockState(pos, stone, false);
+			}
+		}
+		// 坑底以上到海平面：抽空（水、土、石头全部挖掉，形成陡壁）
+		for (int y = floor + 1; y <= seaLevel; y++) {
+			BlockPos pos = new BlockPos(x, y, z);
+			if (!chunk.getBlockState(pos).isAir()) {
+				chunk.setBlockState(pos, air, false);
+			}
+		}
+		// 坑底地表：灰土
+		chunk.setBlockState(new BlockPos(x, floor, z), dirt, false);
+		if (floor - 1 >= minY) {
+			chunk.setBlockState(new BlockPos(x, floor - 1, z), stone, false);
+		}
+	}
 	/** 平缓起伏：0~5 格，用两层值噪声叠加（尺度 ~48 格和 ~24 格） */
 	private static int hillHeight(int x, int z) {
 		double n = valueNoise(x / 48.0, z / 48.0, 0x5EED_0001L) * 0.7

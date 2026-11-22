@@ -6,7 +6,8 @@
     "biome_source": {
       "type": "xishen:gray_realm",
       "regions": {
-        "forbidden_sea": "xishen:forbidden_sea"
+        "forbidden_sea": "xishen:forbidden_sea",
+        "ghost_abyss": "xishen:ghost_abyss"
       },
       "fog_band": "xishen:gray_fog",
       "edge": "xishen:gray_fog_edge"
