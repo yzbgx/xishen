@@ -12,7 +12,7 @@
 | 构建 | Loom 1.19 + Gradle 9.8.2，模组字节码 Java 21 |
 | 版本号 | 1.0.0（在 `gradle.properties` 的 `version` 改） |
 
-> 目前是**空壳工程**：只有入口类、Mixin 骨架和模组元数据，没有任何物品/方块/贴图。等你下一步指令再往里加内容。
+> 当前进度：**灰界维度**（禁忌之海区域 + 常规灰雾带 + 边界灰雾带）、**灰蚀 / 灰蚀：边界** 两种环境伤害、**4 个灰界方块**（灰土/灰草/灰石/灰砾石，全灰阶）。没有生物、植被、矿物、结构、传送门——等你的指令再加。
 
 ---
 
@@ -38,19 +38,25 @@
 ```
 MC mod\
 ├─ src\
-│  ├─ main\                                       ← 通用代码 + 全部资源
+│  ├─ main\
 │  │  ├─ java\com\xishen\
-│  │  │  ├─ XishenMod.java                        ← 主入口（MOD_ID、注册东西的地方）
-│  │  │  └─ mixin\XishenMixin.java                ← 通用 Mixin 骨架
+│  │  │  ├─ XishenMod.java                ← 主入口：注册方块/效果/生成器，启动环境驱动
+│  │  │  ├─ block\XishenBlocks.java       ← 灰土 / 灰草 / 灰石 / 灰砾石
+│  │  │  ├─ effect\GrayErosionEffect.java ← 灰蚀
+│  │  │  ├─ effect\GrayErosionEdgeEffect.java ← 灰蚀：边界（无视豁免）
+│  │  │  ├─ world\GrayRealmRegions.java   ← 区域规格 + 地图半径等常量
+│  │  │  ├─ world\GrayRealmLayout.java    ← 按世界种子生成区域布局/形状
+│  │  │  ├─ world\GrayRealmBiomeSource.java ← 按坐标分配 区域/灰雾带/边界 群系
+│  │  │  ├─ world\GrayRealmChunkGenerator.java ← 地形后处理（海域保水、雾带抽干铺灰草灰土）
+│  │  │  ├─ world\GrayRealmTicker.java    ← 每秒挂灰蚀/失明/黑暗、免疫判定
+│  │  │  └─ mixin\XishenMixin.java
 │  │  └─ resources\
-│  │     ├─ fabric.mod.json                       ← 模组元数据（id/名称/入口/依赖）
-│  │     ├─ xishen.mixins.json                    ← 通用 Mixin 配置
-│  │     └─ assets\xishen\                        ← 美术资源，路径固定 assets\<modid>\
-│  │        └─ icon.png                           ← 模组图标（列表里显示，可替换成自己的）
-│  └─ client\                                     ← 仅客户端代码（渲染/按键/HUD）
-│     ├─ java\com\xishen\client\XishenClient.java
-│     └─ resources\xishen.client.mixins.json
-└─ build\libs\xishen-1.0.0.jar                    ← 打包产物
+│  │     ├─ fabric.mod.json
+│  │     ├─ xishen.mixins.json
+│  │     ├─ assets\xishen\            ← 贴图/模型/语言/效果图标
+│  │     └─ data\xishen\              ← 维度/群系/地形/伤害类型/战利品表
+│  └─ client\java\com\xishen\client\XishenClient.java
+└─ build\libs\xishen-1.0.0.jar        ← 打包产物
 ```
 
 要加内容时的固定位置（路径写错游戏里就会紫黑方块或显示键名）：
@@ -71,11 +77,13 @@ MC mod\
 
 | 文件 | 负责什么 |
 | --- | --- |
-| `src\main\java\com\xishen\XishenMod.java` | 主入口：注册状态效果、启动灰界环境驱动 |
-| `src\main\java\com\xishen\effect\GrayErosionEffect.java` | 「灰蚀」效果本体：每 2 秒按等级扣血，走自定义伤害类型 |
+| `src\main\java\com\xishen\XishenMod.java` | 主入口：注册方块 / 状态效果 / 生成器，启动灰界环境驱动 |
+| `src\main\java\com\xishen\block\XishenBlocks.java` | 灰界方块注册（灰土/灰草/灰石/灰砾石） |
+| `src\main\java\com\xishen\effect\GrayErosionEffect.java` | 「灰蚀」效果本体：每 2 秒按等级扣血 |
+| `src\main\java\com\xishen\effect\GrayErosionEdgeEffect.java` | 「灰蚀：边界」：伤害翻倍、无视豁免 |
 | `src\main\java\com\xishen\world\GrayRealmRegions.java` | 区域规格表（半径区间、是否固定在原点）+ 地图半径等常量 |
 | `src\main\java\com\xishen\world\GrayRealmLayout.java` | 按世界种子生成布局：区域位置/大小/不规则形状、灰雾带与边界判定、灰蚀等级公式 |
-| `src\main\java\com\xishen\world\GrayRealmChunkGenerator.java` | 地形生成器：按区域后处理地形——禁忌之海保水，灰雾带抽干成灰黑荒原 |
+| `src\main\java\com\xishen\world\GrayRealmChunkGenerator.java` | 地形生成器：按区域后处理地形——禁忌之海保水，雾带/边界抽干成灰草+灰土丘陵 |
 | `src\main\java\com\xishen\world\GrayRealmTicker.java` | 每秒扫描灰界里的活物，按坐标挂灰蚀/失明/黑暗；免疫判定也在这里 |
 | `src\client\java\com\xishen\client\XishenClient.java` | 客户端入口（以后做按键、HUD、渲染） |
 | `src\main\resources\data\xishen\...` | 纯数据：维度、群系、地形、伤害类型、标签（改 JSON 就能调数值/范围，不用写 Java） |
@@ -114,7 +122,7 @@ MC mod\
 - 区域之外、灰界范围之内（离地图中心 3000 格内）全部是**常规灰雾带** `xishen:gray_fog`——也就是"实体区域以外的不规则空地"；超出 3000 格是**边界灰雾带** `xishen:gray_fog_edge`（雾最浓、伤害最高）。
 - 加新区域：`GrayRealmRegions.SPECS` 加一条规格 + `dimension/gray_realm.json` 的 `regions` 表里配群系；原书特别点明的形状（如鬼嘲深渊是巨大峡谷）以后在 `GrayRealmLayout` 里按 id 特判拉伸。
 - **地形用噪声随机生成**（抄的原版 overworld 噪声路由器），所以每次开新世界，海床起伏、岛屿形状都不一样。
-- 海平面抬到 **96**，绝大部分地形被水淹没，只剩零星岛屿；海底是砾石，岛屿表层是凝灰岩 / 安山岩（灰界配色）。
+- 海平面抬到 **96**，绝大部分地形被水淹没，只剩零星岛屿；海床是**灰砾石**、地层是**灰石**、岛屿表层是**灰土**（全灰阶，见下一节）。
 - **地形按区域区分**（`GrayRealmChunkGenerator`）：禁忌之海区域里保留海水；**灰雾带和边界灰雾带**都抽干海水，铺成灰界地表——顶层灰草方块、下面 3 层灰土、再往下灰石，带 0~5 格平缓起伏；两者地形完全一样，**区别只在伤害**。
 - 时间固定在**午夜**（`fixed_time: 18000`）、环境光偏暗、床会爆炸（`bed_works: false`）、没有袭击。
 - **没有任何生物、植被、矿物、结构**（`spawners` 全空、`features` 全空、`disable_mob_generation: true`）——按你的要求，生物和传送门等你发话再加。
@@ -133,6 +141,7 @@ MC mod\
 - 三个群系的 **雾色/天空色/水色/水下雾色全部改成了灰阶**（比如水色 `#2A2A2A`），所以连海水都是灰的，没有原版的蓝。
 - 液体用的是原版水，但通过群系颜色去掉了蓝色调；没有额外写流体。
 - 贴图在 `assets/xishen/textures/block/`，都是纯灰（R=G=B），没有色相。
+
 怎么进去（当前只能用命令，因为你还没让做传送门）：
 
 ```
@@ -150,7 +159,7 @@ MC mod\
 | --- | --- | --- | --- | --- |
 | 区域（如禁忌之海） | 在某个区域圆内 | 0 | 1（半颗心） | — |
 | 常规灰雾带 | 区域外、灰界半径 3000 内 | 1 起，离区域越远越高（最高 3） | 2 ~ 4 | **失明** |
-| 边界灰雾带 | 超出灰界半径 3000 后 | **「灰蚀：边界」**（独立效果），2 级起每 200 格 +1，最高 6 | 6 ~ 14 | **失明 + 黑暗**，并**无视一切豁免**（灰界生物、神道领域也会被侵蚀） |
+| 边界灰雾带 | 超出灰界半径 3000 后 | **「灰蚀：边界」**（独立效果），0 级起每 200 格 +1，最高 4 级 | 2 ~ 10 | **失明 + 黑暗**，并**无视一切豁免**（灰界生物、神道领域也会被侵蚀） |
 
 布局算法在 `com.xishen.world.GrayRealmLayout`（按世界种子生成位置/大小/不规则形状），区域规格在 `GrayRealmRegions.SPECS`（含半径区间、是否固定在原点），`WORLD_RADIUS = 3000` 是灰界地图半径。
 
@@ -248,7 +257,9 @@ VS Code 里也可以 `Ctrl+Shift+P` → `Tasks: Run Task` → `MC mod: build（�
 
 **4. `settings.gradle` 报 `Unexpected character: '\ufeff'`** → 文件带 BOM 了，用 VS Code 右下角改成 UTF-8 另存。
 
-**5. 物品紫黑方块 / 名字显示成键名** → 模型文件名或 `textures` 路径不对、贴图不是 16×16；或 `lang` 里缺键。
+**5. 换了地形/方块，但老存档里没变化** → 地形和群系颜色是生成时写进存档的，改代码不会重写既有区块；想看到新效果要**新建世界**。
+
+**6. 物品紫黑方块 / 名字显示成键名** → 模型文件名或 `textures` 路径不对、贴图不是 16×16；或 `lang` 里缺键。
 
 ---
 
