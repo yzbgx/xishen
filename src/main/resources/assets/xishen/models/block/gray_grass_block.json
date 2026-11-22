@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "xishen:block/gray_grass_top",
+    "bottom": "xishen:block/gray_dirt",
+    "side": "xishen:block/gray_grass_side"
+  }
+}

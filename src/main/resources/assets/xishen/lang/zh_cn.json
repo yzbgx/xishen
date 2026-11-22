@@ -3,5 +3,7 @@
   "biome.xishen.gray_fog": "灰雾带",
   "biome.xishen.gray_fog_edge": "边界灰雾带",
   "effect.xishen.gray_erosion": "灰蚀",
-  "death.attack.gray_erosion": "%1$s 在灰界中被侵蚀殆尽"
+  "death.attack.gray_erosion": "%1$s 在灰界中被侵蚀殆尽",
+  "block.xishen.gray_dirt": "灰土",
+  "block.xishen.gray_grass_block": "灰草方块"
 }
