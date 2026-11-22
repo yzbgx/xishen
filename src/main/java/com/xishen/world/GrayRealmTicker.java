@@ -103,7 +103,6 @@ public final class GrayRealmTicker {
 			int level0 = worldLayout.erosionLevel(x, z);
 			living.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(XishenMod.GRAY_EROSION),
 					REFRESH_DURATION, level0, true, false, true));
-			living.addEffect(new MobEffectInstance(MobEffects.HUNGER, REFRESH_DURATION, 0, true, false, true));
 
 			if (biome.is(FOG_BIOME)) {
 				living.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, REFRESH_DURATION, 0, true, false, true));
