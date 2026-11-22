@@ -1,0 +1,11 @@
+{
+  "type": "xishen:gray_realm",
+  "generator": {
+    "type": "minecraft:noise",
+    "settings": "xishen:gray_realm",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "xishen:forbidden_sea"
+    }
+  }
+}

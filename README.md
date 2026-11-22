@@ -69,7 +69,35 @@ MC mod\
 
 ---
 
-## 三、常用操作
+## 三、灰界维度：禁忌之海（当前进度）
+
+**灰界**已经做成一个真正的维度，里面目前只有第一个区域「禁忌之海」。
+
+| 内容 | 注册名 | 文件 |
+| --- | --- | --- |
+| 维度 | `xishen:gray_realm` | `data/xishen/dimension/gray_realm.json` |
+| 维度类型 | `xishen:gray_realm` | `data/xishen/dimension_type/gray_realm.json` |
+| 生物群系 | `xishen:forbidden_sea`（禁忌之海） | `data/xishen/worldgen/biome/forbidden_sea.json` |
+| 地形噪声 | `xishen:gray_realm` | `data/xishen/worldgen/noise_settings/gray_realm.json` |
+
+设计要点（按你的要求：**区域位置固定，区域内地形随机**，像末地主岛那样位置固定、但地形细节每次不同）：
+
+- **整片灰界是一个维度**，区域之间靠坐标分隔（不是每个区域一个维度），以后加「鬼嘲深渊 / 苦肉浊林 / 叹息旷野 / 虚妄山脉 / 风暴孤岛」只是往同一个维度里加区域。
+- **地形用噪声随机生成**（抄的原版 overworld 噪声路由器），所以每次开新世界，海床起伏、岛屿形状都不一样。
+- 当前只有禁忌之海一个群系，`biome_source` 是 `fixed`，整片维度都是海；以后加区域时换成按坐标分区的噪声源或自定义 biome source。
+- 海平面抬到 **96**，绝大部分地形被水淹没，只剩零星岛屿；海底是砾石，岛屿表层是凝灰岩 / 安山岩（灰界配色）。
+- 时间固定在**午夜**（`fixed_time: 18000`）、环境光偏暗、床会爆炸（`bed_works: false`）、没有袭击。
+- **没有任何生物、植被、矿物、结构**（`spawners` 全空、`features` 全空、`disable_mob_generation: true`）——按你的要求，生物和传送门等你发话再加。
+
+怎么进去（当前只能用命令，因为你还没让做传送门）：
+
+```
+/execute in xishen:gray_realm run tp @s 0 120 0
+```
+
+落地后如果掉进水里，先 `/gamemode creative` 再飞起来看看地形。
+
+## 四、常用操作
 
 **编译 / 打包**
 
@@ -102,7 +130,7 @@ VS Code 里也可以 `Ctrl+Shift+P` → `Tasks: Run Task` → `MC mod: build（�
 
 ---
 
-## 四、不同 MC 版本 / 加载器的差异
+## 五、不同 MC 版本 / 加载器的差异
 
 | MC 版本 | 需要 Java | 模板 Gradle | 插件 id | 目录结构 |
 | --- | --- | --- | --- | --- |
@@ -124,7 +152,7 @@ VS Code 里也可以 `Ctrl+Shift+P` → `Tasks: Run Task` → `MC mod: build（�
 
 ---
 
-## 五、常见问题
+## 六、常见问题
 
 **1. `Dependency requires at least JVM runtime version 25`** → Gradle 用错 JDK，检查 `gradle.properties` 的 `org.gradle.java.home` 是否为 JDK 25。
 
@@ -138,7 +166,7 @@ VS Code 里也可以 `Ctrl+Shift+P` → `Tasks: Run Task` → `MC mod: build（�
 
 ---
 
-## 六、git 说明
+## 七、git 说明
 
 工程初始化过 git，**没有连任何 GitHub 远程仓库，也没有 push 过**。提交作者是占位身份：
 
