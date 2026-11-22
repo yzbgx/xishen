@@ -257,7 +257,13 @@ VS Code 里也可以 `Ctrl+Shift+P` → `Tasks: Run Task` → `MC mod: build（�
 
 **4. `settings.gradle` 报 `Unexpected character: '\ufeff'`** → 文件带 BOM 了，用 VS Code 右下角改成 UTF-8 另存。
 
-**5. 鼠标悬停的 Javadoc/提示里中文是乱码** → Java 语言服务器按系统默认编码（GBK）读源码。已在 `.vscode\settings.json` 里加 `"java.jdt.ls.vmargs": "-Dfile.encoding=UTF-8 -Xmx1G"`，改完要 **Reload Window** 才生效。
+**5. 鼠标悬停的 Javadoc/提示里中文是乱码** → Java 语言服务器用自己的 workspace 编码（首次启动时按系统 GBK 建的），光加 `-Dfile.encoding=UTF-8` 不够。`.vscode\settings.json` 里已经加了：
+   ```json
+   "java.jdt.ls.vmargs": "-Dfile.encoding=UTF-8 -Xmx1G",
+   "java.project.encoding": "setDefault"
+   ```
+   然后执行 `Ctrl+Shift+P` → **`Java: Clean Java Language Server Workspace`** → Restart and delete，让语言服务器丢掉旧的 GBK 缓存重建。
+   > 只在必须兼容老中文 Windows 文件时才考虑 GBK；本项目（Java + JSON + GitHub）统一 **UTF-8**。
 
 **6. 换了地形/方块，但老存档里没变化** → 地形和群系颜色是生成时写进存档的，改代码不会重写既有区块；想看到新效果要**新建世界**。
 
