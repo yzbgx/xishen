@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"package": "com.xishen.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"XishenMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

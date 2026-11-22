@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "xishen",
+	"version": "${version}",
+	"name": "戏神",
+	"description": "戏神 —— 灵感来自《我不是戏神》的 Minecraft 模组。",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "",
+		"sources": ""
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/xishen/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.xishen.XishenMod"
+		],
+		"client": [
+			"com.xishen.client.XishenClient"
+		]
+	},
+	"mixins": [
+		"xishen.mixins.json",
+		{
+			"config": "xishen.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
