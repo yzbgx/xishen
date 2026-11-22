@@ -4,6 +4,7 @@ import com.xishen.block.XishenBlocks;
 import com.xishen.effect.GrayErosionEdgeEffect;
 import com.xishen.effect.GrayErosionEffect;
 import com.xishen.world.GrayRealmBiomeSource;
+import com.xishen.world.GrayRealmCommands;
 import com.xishen.world.GrayRealmChunkGenerator;
 import com.xishen.world.GrayRealmTicker;
 
@@ -52,6 +53,9 @@ public class XishenMod implements ModInitializer {
 
 		// 注册灰界专属方块（灰土 / 灰草方块）
 		XishenBlocks.register();
+
+		// 注册 /xishen 指令（regions 列表、tp 传送到区域正中心）
+		GrayRealmCommands.register();
 
 		// 灰界环境驱动：每秒扫描灰界里的活物并挂效果
 		GrayRealmTicker.init();
