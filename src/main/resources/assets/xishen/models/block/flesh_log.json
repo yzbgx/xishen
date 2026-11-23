@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "xishen:block/flesh_log_top",
+    "side": "xishen:block/flesh_log_side"
+  }
+}

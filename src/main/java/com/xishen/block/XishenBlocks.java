@@ -51,11 +51,26 @@ public final class XishenBlocks {
 			.strength(0.6F)
 			.sound(SoundType.GRAVEL));
 
+
+	/** 血肉原木（苦肉浊林的树） */
+	public static final Block FLESH_LOG = new Block(BlockBehaviour.Properties.of()
+			.mapColor(MapColor.COLOR_RED)
+			.strength(2.0F)
+			.sound(SoundType.WOOD));
+
+	/** 血肉簇（血肉树的"树叶"） */
+	public static final Block FLESH_LEAVES = new Block(BlockBehaviour.Properties.of()
+			.mapColor(MapColor.COLOR_RED)
+			.strength(0.3F)
+			.sound(SoundType.GRASS));
+
 	public static void register() {
 		registerWithItem("gray_dirt", GRAY_DIRT);
 		registerWithItem("gray_grass_block", GRAY_GRASS_BLOCK);
 		registerWithItem("gray_stone", GRAY_STONE);
 		registerWithItem("gray_gravel", GRAY_GRAVEL);
+		registerWithItem("flesh_log", FLESH_LOG);
+		registerWithItem("flesh_leaves", FLESH_LEAVES);
 
 		// 创造模式物品栏 → 建筑方块
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.BUILDING_BLOCKS).register(entries -> {
@@ -63,6 +78,8 @@ public final class XishenBlocks {
 			entries.accept(GRAY_DIRT);
 			entries.accept(GRAY_GRASS_BLOCK);
 			entries.accept(GRAY_GRAVEL);
+			entries.accept(FLESH_LOG);
+			entries.accept(FLESH_LEAVES);
 		});
 	}
 

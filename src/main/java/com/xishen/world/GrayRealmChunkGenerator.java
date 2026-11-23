@@ -250,24 +250,76 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 				XishenBlocks.GRAY_DIRT.defaultBlockState());
 	}
 
-	/** 苦肉浊林：地面是灰草灰土，上面长出成片的细高"石柱林"（模拟血肉丛林），柱顶铺灰土 */
+	/**
+	 * 苦肉浊林：血肉丛林。
+	 *
+	 * 按原著"血肉丛生的林间"来做：地面是灰草灰土，上面长**血肉树**——
+	 * 树干是血肉原木（5~8 格高），树冠是血肉簇（3×3、两层），树冠边缘再垂下一圈肉块。
+	 * 6×6 一格随机长一棵（带偏移，所以不会排成棋盘），密度约 65%。
+	 */
 	private void buildRotForest(ChunkAccess chunk, int x, int z, int minY, int seaLevel) {
-		int groundH = (int) Math.round((valueNoise(x / 60.0, z / 60.0, 0xB21L) + 1.0));
-		int ground = seaLevel + Math.max(0, Math.min(2, groundH));
+		int ground = forestGround(x, z, seaLevel);
 		shapeColumn(chunk, x, z, minY, seaLevel, ground,
 				XishenBlocks.GRAY_GRASS_BLOCK.defaultBlockState(),
 				XishenBlocks.GRAY_DIRT.defaultBlockState());
 
-		double density = valueNoise(x / 26.0, z / 26.0, 0xB22L);
-		if (density > 0.25) {
-			int pillar = 6 + (int) Math.round((valueNoise(x / 13.0, z / 13.0, 0xB23L) + 1.0) * 4.0);
-			int pillarTop = ground + pillar;
-			BlockState stone = XishenBlocks.GRAY_STONE.defaultBlockState();
-			for (int y = ground + 1; y <= pillarTop; y++) {
-				chunk.setBlockState(new BlockPos(x, y, z), stone, false);
+		BlockState log = XishenBlocks.FLESH_LOG.defaultBlockState();
+		BlockState leaves = XishenBlocks.FLESH_LEAVES.defaultBlockState();
+		int spacing = 6;
+
+		for (int cellX = Math.floorDiv(x - 1, spacing); cellX <= Math.floorDiv(x + 1, spacing); cellX++) {
+			for (int cellZ = Math.floorDiv(z - 1, spacing); cellZ <= Math.floorDiv(z + 1, spacing); cellZ++) {
+				long bits = hashBits(cellX, cellZ, 0x5EED_F1E5L);
+				if ((bits & 0xFF) > 165) {
+					continue; // 这一格没有树
+				}
+				int treeX = cellX * spacing + (int) ((bits >>> 8) & 3);
+				int treeZ = cellZ * spacing + (int) ((bits >>> 12) & 3);
+				int dx = x - treeX;
+				int dz = z - treeZ;
+				if (Math.abs(dx) > 1 || Math.abs(dz) > 1) {
+					continue;
+				}
+				int trunk = 5 + (int) ((bits >>> 16) & 3);
+				int base = forestGround(treeX, treeZ, seaLevel);
+
+				if (dx == 0 && dz == 0) {
+					for (int y = 1; y <= trunk; y++) {
+						chunk.setBlockState(new BlockPos(x, base + y, z), log, false);
+					}
+				}
+				// 树冠：两层 3x3
+				setIfAir(chunk, x, base + trunk, z, leaves);
+				setIfAir(chunk, x, base + trunk + 1, z, leaves);
+				// 树冠下沿垂一圈肉
+				if (Math.abs(dx) + Math.abs(dz) >= 1) {
+					setIfAir(chunk, x, base + trunk - 1, z, leaves);
+				}
 			}
-			chunk.setBlockState(new BlockPos(x, pillarTop, z), XishenBlocks.GRAY_DIRT.defaultBlockState(), false);
 		}
+	}
+
+	/** 血肉林的地面高度：海平面 + 0~2 格缓起伏 */
+	private int forestGround(int x, int z, int seaLevel) {
+		int h = (int) Math.round((valueNoise(x / 60.0, z / 60.0, 0xB21L) + 1.0));
+		return seaLevel + Math.max(0, Math.min(2, h));
+	}
+
+	/** 只有空气才放方块（避免树叶盖掉树干） */
+	private void setIfAir(ChunkAccess chunk, int x, int y, int z, BlockState state) {
+		BlockPos pos = new BlockPos(x, y, z);
+		if (chunk.getBlockState(pos).isAir()) {
+			chunk.setBlockState(pos, state, false);
+		}
+	}
+
+	/** 位置哈希（用于决定树的位置/高度，确定性） */
+	private static long hashBits(int x, int z, long seed) {
+		long h = seed ^ (x * 0x9E3779B97F4A7C15L) ^ (z * 0xC2B2AE3D27D4EB4FL);
+		h ^= h >>> 33;
+		h *= 0xff51afd7ed558ccdL;
+		h ^= h >>> 33;
+		return h;
 	}
 
 	/** 虚妄山脉：脊状噪声堆出 0~60 格的山脉，峰顶是灰石、山脚是灰土 */
