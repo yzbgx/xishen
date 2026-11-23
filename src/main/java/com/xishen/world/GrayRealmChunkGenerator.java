@@ -138,7 +138,9 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 				String regionId = layout.regionIdAt(x, z);
 				if (regionId != null) {
 					// 按区域 id 选地形（禁忌之海保持海水，什么都不做）
-					if ("ghost_abyss".equals(regionId)) {
+					if ("forbidden_sea".equals(regionId)) {
+						buildForbiddenSea(chunk, x, z, minY, seaLevel);
+					} else if ("ghost_abyss".equals(regionId)) {
 						carveAbyss(chunk, layout, x, z, minY, seaLevel);
 					} else if ("rot_forest".equals(regionId)) {
 						buildRotForest(chunk, x, z, minY, seaLevel);
@@ -165,6 +167,37 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 				for (int depth = 1; depth <= 3; depth++) {
 					chunk.setBlockState(new BlockPos(x, top - depth, z), dirt, false);
 				}
+			}
+		}
+	}
+
+	/**
+	 * 禁忌之海：保留海水，但给海"垫底"。
+	 *
+	 * 原版噪声地形在这个维度里最低能到 y=0 以下，水会一路深到岩浆层（一百多格），
+	 * 底部水和岩浆交界还会生成黑曜石——所以这里把海床固定到海平面下 49~61 格：
+	 * 海床以下填灰石、海床铺灰砾石，海底到海平面之间若出现岩浆/黑曜石也一并填掉。
+	 */
+	private void buildForbiddenSea(ChunkAccess chunk, int x, int z, int minY, int seaLevel) {
+		int depth = 55 + (int) Math.round(valueNoise(x / 90.0, z / 90.0, 0x5EA1L) * 6.0);
+		int floor = seaLevel - depth;
+		BlockState stone = XishenBlocks.GRAY_STONE.defaultBlockState();
+		BlockState gravel = XishenBlocks.GRAY_GRAVEL.defaultBlockState();
+
+		for (int y = minY; y <= floor; y++) {
+			BlockPos pos = new BlockPos(x, y, z);
+			BlockState state = chunk.getBlockState(pos);
+			if (state.isAir() || !state.getFluidState().isEmpty()) {
+				chunk.setBlockState(pos, stone, false);
+			}
+		}
+		chunk.setBlockState(new BlockPos(x, floor, z), gravel, false);
+
+		for (int y = floor + 1; y <= seaLevel; y++) {
+			BlockPos pos = new BlockPos(x, y, z);
+			BlockState state = chunk.getBlockState(pos);
+			if (state.is(Blocks.LAVA) || state.is(Blocks.OBSIDIAN) || state.is(Blocks.MAGMA_BLOCK)) {
+				chunk.setBlockState(pos, stone, false);
 			}
 		}
 	}

@@ -15,6 +15,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
@@ -106,6 +107,10 @@ public final class GrayRealmTicker {
 
 		for (Entity entity : level.getAllEntities()) {
 			if (!(entity instanceof LivingEntity living) || !living.isAlive()) {
+				continue;
+			}
+			// 创造 / 旁观模式的玩家不吃任何灰界效果（方便调试和建东西）
+			if (living instanceof Player player && (player.isCreative() || player.isSpectator())) {
 				continue;
 			}
 			double x = living.getX();

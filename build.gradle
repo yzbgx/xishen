@@ -17,7 +17,20 @@ loom {
 	mods {
 		"xishen" {
 			sourceSet sourceSets.main
-			sourceSet sourceSets.client
+			// 让 runClient / runServer 的日志也走 UTF-8（否则 Windows 控制台里的中文是乱码）
+	runs {
+		client {
+			vmArg "-Dfile.encoding=UTF-8"
+			vmArg "-Dstdout.encoding=UTF-8"
+			vmArg "-Dstderr.encoding=UTF-8"
+		}
+		server {
+			vmArg "-Dfile.encoding=UTF-8"
+			vmArg "-Dstdout.encoding=UTF-8"
+			vmArg "-Dstderr.encoding=UTF-8"
+		}
+	}
+	sourceSet sourceSets.client
 		}
 	}
 }

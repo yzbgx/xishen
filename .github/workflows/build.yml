@@ -22,9 +22,11 @@ jobs:
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
       # 项目 gradle.properties 里的 org.gradle.java.home 是本机 Windows 路径（CI 上没有），
-      # 这里用命令行参数覆盖成 CI 自己的 JDK（与 setup-java 装的那个一致）。
+      # 直接在 CI 上删掉这行，用 setup-java 装好的 JDK 跑。
+      - name: drop machine-specific gradle property
+        run: sed -i '/org\.gradle\.java\.home/d' gradle.properties
       - name: build
-        run: ./gradlew build -Dorg.gradle.java.home="$JAVA_HOME"
+        run: ./gradlew build --stacktrace
       - name: capture build artifacts
         uses: actions/upload-artifact@v7
         with:
