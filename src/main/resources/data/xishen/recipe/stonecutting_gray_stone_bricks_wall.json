@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "xishen:gray_stone_bricks"
+  },
+  "result": {
+    "id": "xishen:gray_stone_bricks_wall",
+    "count": 1
+  }
+}

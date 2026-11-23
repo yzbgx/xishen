@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "xishen:flesh_log"
+    }
+  ],
+  "result": {
+    "id": "xishen:flesh_planks",
+    "count": 4
+  }
+}

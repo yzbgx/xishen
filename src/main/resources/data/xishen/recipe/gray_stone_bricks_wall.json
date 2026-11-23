@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "xishen:gray_stone_bricks"
+    }
+  },
+  "result": {
+    "id": "xishen:gray_stone_bricks_wall",
+    "count": 6
+  }
+}

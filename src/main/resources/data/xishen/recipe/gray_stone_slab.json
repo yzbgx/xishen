@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "xishen:gray_stone"
+    }
+  },
+  "result": {
+    "id": "xishen:gray_stone_slab",
+    "count": 6
+  }
+}

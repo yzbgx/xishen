@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "##",
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": {
+      "item": "xishen:flesh_planks"
+    }
+  },
+  "result": {
+    "id": "xishen:flesh_door",
+    "count": 3
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "xishen:gray_dirt"
+    },
+    {
+      "item": "xishen:gray_dirt"
+    },
+    {
+      "item": "xishen:gray_gravel"
+    },
+    {
+      "item": "xishen:gray_gravel"
+    }
+  ],
+  "result": {
+    "id": "xishen:gray_coarse_dirt",
+    "count": 4
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "xishen:flesh_planks"
+    }
+  },
+  "result": {
+    "id": "xishen:flesh_slab",
+    "count": 6
+  }
+}

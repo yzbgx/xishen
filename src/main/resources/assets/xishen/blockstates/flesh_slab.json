@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "xishen:block/flesh_slab"
+    },
+    "type=double": {
+      "model": "xishen:block/flesh_planks"
+    },
+    "type=top": {
+      "model": "xishen:block/flesh_slab_top"
+    }
+  }
+}

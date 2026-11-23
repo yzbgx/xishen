@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "xishen:flesh_planks"
+    }
+  ],
+  "result": {
+    "id": "xishen:flesh_button",
+    "count": 1
+  }
+}

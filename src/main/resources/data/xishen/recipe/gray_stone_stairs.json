@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "xishen:gray_stone"
+    }
+  },
+  "result": {
+    "id": "xishen:gray_stone_stairs",
+    "count": 4
+  }
+}

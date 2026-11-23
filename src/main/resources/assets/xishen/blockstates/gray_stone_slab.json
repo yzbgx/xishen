@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "xishen:block/gray_stone_slab"
+    },
+    "type=double": {
+      "model": "xishen:block/gray_stone"
+    },
+    "type=top": {
+      "model": "xishen:block/gray_stone_slab_top"
+    }
+  }
+}

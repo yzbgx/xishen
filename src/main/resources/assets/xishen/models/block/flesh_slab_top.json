@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "xishen:block/flesh_planks",
+    "side": "xishen:block/flesh_planks",
+    "top": "xishen:block/flesh_planks"
+  }
+}

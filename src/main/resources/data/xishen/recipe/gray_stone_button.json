@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "xishen:gray_stone"
+    }
+  ],
+  "result": {
+    "id": "xishen:gray_stone_button",
+    "count": 1
+  }
+}
