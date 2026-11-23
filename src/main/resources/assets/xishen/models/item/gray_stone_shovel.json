@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "xishen:item/gray_stone_shovel"
+  }
+}

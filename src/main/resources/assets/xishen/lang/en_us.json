@@ -34,5 +34,15 @@
   "block.xishen.flesh_door": "Flesh Door",
   "block.xishen.flesh_trapdoor": "Flesh Trapdoor",
   "block.xishen.flesh_button": "Flesh Button",
-  "block.xishen.flesh_pressure_plate": "Flesh Pressure Plate"
+  "block.xishen.flesh_pressure_plate": "Flesh Pressure Plate",
+  "item.xishen.gray_stone_sword": "Gray Stone Sword",
+  "item.xishen.gray_stone_pickaxe": "Gray Stone Pickaxe",
+  "item.xishen.gray_stone_axe": "Gray Stone Axe",
+  "item.xishen.gray_stone_shovel": "Gray Stone Shovel",
+  "item.xishen.gray_stone_hoe": "Gray Stone Hoe",
+  "item.xishen.flesh_sword": "Flesh Sword",
+  "item.xishen.flesh_pickaxe": "Flesh Pickaxe",
+  "item.xishen.flesh_axe": "Flesh Axe",
+  "item.xishen.flesh_shovel": "Flesh Shovel",
+  "item.xishen.flesh_hoe": "Flesh Hoe"
 }

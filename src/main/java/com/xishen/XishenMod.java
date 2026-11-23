@@ -1,6 +1,7 @@
 package com.xishen;
 
 import com.xishen.block.XishenBlocks;
+import com.xishen.item.XishenItems;
 import com.xishen.effect.GrayErosionEdgeEffect;
 import com.xishen.effect.GrayErosionEffect;
 import com.xishen.world.GrayRealmBiomeSource;
@@ -53,6 +54,7 @@ public class XishenMod implements ModInitializer {
 
 		// 注册灰界专属方块（灰土 / 灰草方块）
 		XishenBlocks.register();
+		XishenItems.register();
 
 		// 注册 /xishen 指令（regions 列表、tp 传送到区域正中心）
 		GrayRealmCommands.register();

@@ -170,6 +170,33 @@ MC mod\
 | 血肉 | `flesh_log` | 血肉木板 → 楼梯 / 台阶 / 栅栏 / 栅栏门 / 门 / 活板门 / 按钮 / 压力板 | 原木 → 4 木板；之后和原版橡木那套完全相同（栅栏 4 板+2 棍→3，门 2×3→3，活板门 2×3→2……） |
 | 灰土 | `gray_dirt` | 粗灰土 | 2 灰土 + 2 灰砾石（无序）→ 4 粗灰土，和原版"粗土"一样 |
 
+### 工具（对应原版的石制 / 木制两套）
+
+| 材质 | 剑 | 镐 | 斧 | 锹 | 锄 |
+| --- | --- | --- | --- | --- | --- |
+| 灰石（= 原版石级，`Tiers.STONE`） | `gray_stone_sword` | `gray_stone_pickaxe` | `gray_stone_axe` | `gray_stone_shovel` | `gray_stone_hoe` |
+| 血肉（= 原版木级，`Tiers.WOOD`） | `flesh_sword` | `flesh_pickaxe` | `flesh_axe` | `flesh_shovel` | `flesh_hoe` |
+
+- 耐久 / 挖掘速度 / 攻击力**直接复用原版 Tier**，所以数值和原版石制、木制工具完全一致
+  （比如灰石斧 7 伤害、-3.2 速度；血肉锄 -1 伤害、-2.0 速度）
+- 合成表照原版形状：剑 `X / X / #`、镐 `XXX / ·#· / ·#·`、斧 `XX / X# / ·#`、锹 `X / # / #`、锄 `XX / ·# / ·#`，
+  其中 `X` = 灰石 / 血肉木板，`#` = 原版木棍
+- 修复材料：灰石工具用灰石（已加进 `minecraft:stone_tool_materials`），血肉工具用血肉木板（在 `minecraft:planks` 里）
+- 已加进 `minecraft:swords` / `pickaxes` / `axes` / `shovels` / `hoes` 和 `enchantable/*` 标签，
+  所以附魔台、铁砧、抢夺/时运/耐久等机制都把它们当正常工具
+- 图标是把原版石制/木制工具的图形重新上色得到的（灰石=灰度、血肉=暗红）
+
+### 因为补齐了标签，这些原版配方也能直接用我们的方块
+
+| 原版配方 | 现在可以用 |
+| --- | --- |
+| 木棍（2 木板 → 4 棍） | 血肉木板 ✔ |
+| 工作台、箱子、梯子、书架、船 | 血肉木板 ✔（`#minecraft:planks`） |
+| 烧木炭 | 血肉原木 ✔（`#minecraft:logs_that_burn`） |
+| 熔炉（8 圆石 → 熔炉） | 灰石 ✔（`#minecraft:stone_crafting_materials`） |
+| 原版木制工具 | 血肉木板 ✔（`#minecraft:wooden_tool_materials`） |
+| 原版石制工具 | 灰石 ✔（`#minecraft:stone_tool_materials`） |
+
 补充说明：
 
 - 血肉原木 / 血肉木板 分别加进了 `minecraft:logs_that_burn` 和 `minecraft:planks` 标签，

@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "xishen:gray_stone_sword",
+    "xishen:gray_stone_pickaxe",
+    "xishen:gray_stone_axe",
+    "xishen:gray_stone_shovel",
+    "xishen:gray_stone_hoe",
+    "xishen:flesh_sword",
+    "xishen:flesh_pickaxe",
+    "xishen:flesh_axe",
+    "xishen:flesh_shovel",
+    "xishen:flesh_hoe"
+  ]
+}

@@ -34,5 +34,15 @@
   "block.xishen.flesh_door": "血肉门",
   "block.xishen.flesh_trapdoor": "血肉活板门",
   "block.xishen.flesh_button": "血肉按钮",
-  "block.xishen.flesh_pressure_plate": "血肉压力板"
+  "block.xishen.flesh_pressure_plate": "血肉压力板",
+  "item.xishen.gray_stone_sword": "灰石剑",
+  "item.xishen.gray_stone_pickaxe": "灰石镐",
+  "item.xishen.gray_stone_axe": "灰石斧",
+  "item.xishen.gray_stone_shovel": "灰石锹",
+  "item.xishen.gray_stone_hoe": "灰石锄",
+  "item.xishen.flesh_sword": "血肉剑",
+  "item.xishen.flesh_pickaxe": "血肉镐",
+  "item.xishen.flesh_axe": "血肉斧",
+  "item.xishen.flesh_shovel": "血肉锹",
+  "item.xishen.flesh_hoe": "血肉锄"
 }
