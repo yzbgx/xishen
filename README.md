@@ -300,7 +300,8 @@ VS Code 里也可以 `Ctrl+Shift+P` → `Tasks: Run Task` → `MC mod: build（�
 
 - 提交身份：`LGXXXXXX <862210701@qq.com>`（本地 `git config`，只作用于这个仓库）
 - 远程：`origin = https://github.com/yzbgx/xishen.git`
-- 代理：**这个仓库本地配了** `http.proxy=http://127.0.0.1:7890`。直连 GitHub 会 25 秒起步、经常挂死，所以必须走 Clash；哪天不开 Clash 了，执行 `git config --local --unset http.proxy` 即可去掉。
+- 代理：**当前没有配代理**（实测直连 GitHub 正常，1 秒内响应）。如果以后直连变慢/连不上，再临时加：
+  `git config --local http.proxy http://127.0.0.1:7890`（前提是 Clash 开着），不需要时 `git config --local --unset http.proxy` 去掉。
 - 推送凭据由 Git Credential Manager 保存，不用每次登录。
 
 常用命令：
