@@ -191,7 +191,8 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 		// 坑底以下：只补 8 格（再往下本来就是实心，没必要整列重写，省性能）
 		for (int y = Math.max(minY, floor - 8); y <= floor; y++) {
 			BlockPos pos = new BlockPos(x, y, z);
-			if (!chunk.getBlockState(pos).isSolid()) {
+			BlockState current = chunk.getBlockState(pos);
+			if (current.isAir() || !current.getFluidState().isEmpty()) {
 				chunk.setBlockState(pos, stone, false);
 			}
 		}
