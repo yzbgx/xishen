@@ -102,7 +102,8 @@ MC mod\
 
 ## 三、灰界维度：禁忌之海（当前进度）
 
-**灰界**已经做成一个真正的维度，目前有**两个区域**：禁忌之海（海）、鬼嘲深渊（巨型深渊）。
+**灰界**已经做成一个真正的维度，目前有**四个区域**（风暴孤岛按你的要求暂不做）：
+禁忌之海（海）、鬼嘲深渊（碗形深渊）、苦肉浊林（石柱林）、叹息旷野（平原）、虚妄山脉（高山）。
 
 | 内容 | 注册名 | 文件 |
 | --- | --- | --- |
@@ -110,6 +111,9 @@ MC mod\
 | 维度类型 | `xishen:gray_realm` | `data/xishen/dimension_type/gray_realm.json` |
 | 群系·区域1 | `xishen:forbidden_sea`（禁忌之海） | `data/xishen/worldgen/biome/forbidden_sea.json` |
 | 群系·区域2 | `xishen:ghost_abyss`（鬼嘲深渊） | `data/xishen/worldgen/biome/ghost_abyss.json` |
+| 群系·区域3 | `xishen:rot_forest`（苦肉浊林） | `data/xishen/worldgen/biome/rot_forest.json` |
+| 群系·区域4 | `xishen:sigh_plain`（叹息旷野） | `data/xishen/worldgen/biome/sigh_plain.json` |
+| 群系·区域5 | `xishen:vain_range`（虚妄山脉） | `data/xishen/worldgen/biome/vain_range.json` |
 | 群系·常规灰雾带 | `xishen:gray_fog`（灰雾带） | `data/xishen/worldgen/biome/gray_fog.json` |
 | 群系·边界灰雾带 | `xishen:gray_fog_edge`（边界灰雾带） | `data/xishen/worldgen/biome/gray_fog_edge.json` |
 | 群系分配器 | `xishen:gray_realm`（自定义 BiomeSource） | `com.xishen.world.GrayRealmBiomeSource` |
@@ -127,6 +131,9 @@ MC mod\
 - **地形按区域区分**（`GrayRealmChunkGenerator`）：
   - 禁忌之海：保留海水（一片灰海）
   - 鬼嘲深渊：在区域里挖一个**碗形深渊**——越靠中心越深（最深约 60 格，中心底部 y≈36），按 3 格一台阶形成阶梯状陡壁，坑底铺灰土、坑壁是灰石，上方全部抽成空气（没有水、没有岛）
+  - 苦肉浊林：地面是灰草灰土，上面长出成片的**细高石柱**（6~14 格，模拟血肉丛林），柱顶铺灰土
+  - 叹息旷野：一望无际的**平地**，只有 0~3 格缓起伏，地表灰草
+  - 虚妄山脉：**脊状噪声堆山**，山高 10~60 格（最高到 y≈140），峰顶灰石、山脚灰土
   - 灰雾带 / 边界灰雾带：抽干海水，铺成灰草 + 灰土 + 灰石的地表，带 0~5 格平缓起伏；两者地形完全一样，**区别只在伤害**
 - 时间固定在**午夜**（`fixed_time: 18000`）、环境光偏暗、床会爆炸（`bed_works: false`）、没有袭击。
 - **没有任何生物、植被、矿物、结构**（`spawners` 全空、`features` 全空、`disable_mob_generation: true`）——按你的要求，生物和传送门等你发话再加。
@@ -177,7 +184,7 @@ MC mod\
 | 常规灰雾带 | 区域外、灰界半径 3000 内 | 1 起，离区域越远越高（最高 3） | 2 ~ 4 | **失明** |
 | 边界灰雾带 | 超出灰界半径 3000 后 | **「灰蚀：边界」**（独立效果），0 级起每 200 格 +1，最高 4 级 | 2 ~ 10 | **失明 + 黑暗**，并**无视一切豁免**（灰界生物、神道领域也会被侵蚀） |
 
-布局算法在 `com.xishen.world.GrayRealmLayout`（按世界种子生成位置/大小/不规则形状），区域规格在 `GrayRealmRegions.SPECS`（含半径区间、是否固定在原点；现有 `forbidden_sea` 固定原点、`ghost_abyss` 随机摆放），`WORLD_RADIUS = 3000` 是灰界地图半径。
+布局算法在 `com.xishen.world.GrayRealmLayout`（按世界种子生成位置/大小/不规则形状），区域规格在 `GrayRealmRegions.SPECS`（含半径区间、是否固定在原点；现有 `forbidden_sea` 固定原点，其余 3 个随机摆在半径 1900~2250 的环上，彼此至少留 210 格空隙），`WORLD_RADIUS = 3000` 是灰界地图半径。
 
 **谁免疫**（你要的「灰界生物 / 神道领域不受伤」）现在有两个钩子：
 

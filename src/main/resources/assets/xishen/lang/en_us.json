@@ -10,5 +10,8 @@
   "block.xishen.gray_grass_block": "Gray Grass Block",
   "block.xishen.gray_stone": "Gray Stone",
   "block.xishen.gray_gravel": "Gray Gravel",
-  "biome.xishen.ghost_abyss": "Ghost Mock Abyss"
+  "biome.xishen.ghost_abyss": "Ghost Mock Abyss",
+  "biome.xishen.rot_forest": "Rotting Flesh Forest",
+  "biome.xishen.sigh_plain": "Sighing Plain",
+  "biome.xishen.vain_range": "Vain Mountain Range"
 }

@@ -59,28 +59,23 @@ public final class GrayRealmLayout {
 				cx = 0.0;
 				cz = 0.0;
 			} else {
-				// 其它区域：环状随机摆放；和已摆好的区域保持间隔，保证两块区域之间留出灰雾带
-				double angle = (Math.PI * 2.0) * freeIndex / Math.max(1, freeCount)
-						+ (random.nextDouble() - 0.5) * 0.6;
-				double distance = GrayRealmRegions.RING_MIN
+				// 其它区域：环状随机摆放；撞车就转个角度，保证每个区域完整落在灰界地图内、彼此留出灰雾带
+				double baseAngle = (Math.PI * 2.0) * freeIndex / Math.max(1, freeCount)
+						+ (random.nextDouble() - 0.5) * 0.5;
+				double ring = GrayRealmRegions.RING_MIN
 						+ random.nextDouble() * (GrayRealmRegions.RING_MAX - GrayRealmRegions.RING_MIN);
-				cx = Math.cos(angle) * distance;
-				cz = Math.sin(angle) * distance;
-				// 太挤就往远处挪：确保和已有区域之间至少留 GAP 的空隙
-				for (int attempt = 0; attempt < 12; attempt++) {
-					boolean tooClose = false;
-					for (PlacedRegion other : placed) {
-						double minDistance = radius + other.radius() + GrayRealmRegions.REGION_GAP;
-						if (Math.hypot(cx - other.centerX(), cz - other.centerZ()) < minDistance) {
-							tooClose = true;
-							break;
-						}
-					}
-					if (!tooClose) {
+				// 别让区域超出灰界地图（离地图中心超过 WORLD_RADIUS 就成了边界）
+				ring = Math.min(ring, GrayRealmRegions.WORLD_RADIUS - radius - 150.0);
+				double angle = baseAngle;
+				cx = Math.cos(angle) * ring;
+				cz = Math.sin(angle) * ring;
+				for (int attempt = 0; attempt < 10; attempt++) {
+					if (!collides(placed, cx, cz, radius)) {
 						break;
 					}
-					cx *= 1.15;
-					cz *= 1.15;
+					angle = baseAngle + (attempt + 1) * 0.42;
+					cx = Math.cos(angle) * ring;
+					cz = Math.sin(angle) * ring;
 				}
 				freeIndex++;
 			}
@@ -88,6 +83,17 @@ public final class GrayRealmLayout {
 		}
 
 		return new GrayRealmLayout(placed, seed * 0x9E3779B97F4A7C15L + 0x1234_5678_9ABC_DEF0L);
+	}
+
+	/** 新区域是否和已摆好的区域太近（要留出灰雾带空隙） */
+	private static boolean collides(List<PlacedRegion> placed, double cx, double cz, double radius) {
+		for (PlacedRegion other : placed) {
+			double minDistance = radius + other.radius() + GrayRealmRegions.REGION_GAP * 0.6;
+			if (Math.hypot(cx - other.centerX(), cz - other.centerZ()) < minDistance) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** 按 id 找布局里的区域 */

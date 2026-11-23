@@ -136,12 +136,18 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 				int x = chunkPos.getMinBlockX() + localX;
 				int z = chunkPos.getMinBlockZ() + localZ;
 				String regionId = layout.regionIdAt(x, z);
-				if ("ghost_abyss".equals(regionId)) {
-					carveAbyss(chunk, layout, x, z, minY, seaLevel);
-					continue;
-				}
 				if (regionId != null) {
-					continue; // 其它区域（禁忌之海）：保留海水
+					// 按区域 id 选地形（禁忌之海保持海水，什么都不做）
+					if ("ghost_abyss".equals(regionId)) {
+						carveAbyss(chunk, layout, x, z, minY, seaLevel);
+					} else if ("rot_forest".equals(regionId)) {
+						buildRotForest(chunk, x, z, minY, seaLevel);
+					} else if ("sigh_plain".equals(regionId)) {
+						buildSighPlain(chunk, x, z, minY, seaLevel);
+					} else if ("vain_range".equals(regionId)) {
+						buildVainRange(chunk, x, z, minY, seaLevel);
+					}
+					continue;
 				}
 
 				int top = seaLevel + hillHeight(x, z);
@@ -202,6 +208,80 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 			chunk.setBlockState(new BlockPos(x, floor - 1, z), stone, false);
 		}
 	}
+	/**
+	 * 通用塑形：先把 top 以上的水抽干、把山体填实，再铺顶层方块。
+	 * 灰雾带之外的新区域（苦肉浊林 / 叹息旷野 / 虚妄山脉）都用它。
+	 */
+	private void shapeColumn(ChunkAccess chunk, int x, int z, int minY, int seaLevel, int top,
+			BlockState topBlock, BlockState filler) {
+		BlockState air = Blocks.AIR.defaultBlockState();
+		// 1) 地表以上的残留水：抽干
+		for (int y = top + 1; y <= seaLevel; y++) {
+			BlockPos pos = new BlockPos(x, y, z);
+			if (chunk.getBlockState(pos).is(Blocks.WATER)) {
+				chunk.setBlockState(pos, air, false);
+			}
+		}
+		// 2) 地表以上（山体 / 柱子）填实
+		for (int y = seaLevel + 1; y <= top; y++) {
+			BlockPos pos = new BlockPos(x, y, z);
+			if (chunk.getBlockState(pos).isAir()) {
+				chunk.setBlockState(pos, filler, false);
+			}
+		}
+		// 3) 地表附近的水 / 空洞填成实心
+		for (int y = Math.max(minY, top - 3); y <= top; y++) {
+			BlockPos pos = new BlockPos(x, y, z);
+			BlockState state = chunk.getBlockState(pos);
+			if (state.is(Blocks.WATER) || state.isAir()) {
+				chunk.setBlockState(pos, filler, false);
+			}
+		}
+		// 4) 顶层
+		chunk.setBlockState(new BlockPos(x, top, z), topBlock, false);
+	}
+
+	/** 叹息旷野：一望无际的平坦旷野，只有 0~3 格缓起伏，地表灰草 */
+	private void buildSighPlain(ChunkAccess chunk, int x, int z, int minY, int seaLevel) {
+		int h = (int) Math.round((valueNoise(x / 70.0, z / 70.0, 0xA11L) + 1.0) * 1.5);
+		int top = seaLevel + Math.max(0, Math.min(3, h));
+		shapeColumn(chunk, x, z, minY, seaLevel, top,
+				XishenBlocks.GRAY_GRASS_BLOCK.defaultBlockState(),
+				XishenBlocks.GRAY_DIRT.defaultBlockState());
+	}
+
+	/** 苦肉浊林：地面是灰草灰土，上面长出成片的细高"石柱林"（模拟血肉丛林），柱顶铺灰土 */
+	private void buildRotForest(ChunkAccess chunk, int x, int z, int minY, int seaLevel) {
+		int groundH = (int) Math.round((valueNoise(x / 60.0, z / 60.0, 0xB21L) + 1.0));
+		int ground = seaLevel + Math.max(0, Math.min(2, groundH));
+		shapeColumn(chunk, x, z, minY, seaLevel, ground,
+				XishenBlocks.GRAY_GRASS_BLOCK.defaultBlockState(),
+				XishenBlocks.GRAY_DIRT.defaultBlockState());
+
+		double density = valueNoise(x / 26.0, z / 26.0, 0xB22L);
+		if (density > 0.25) {
+			int pillar = 6 + (int) Math.round((valueNoise(x / 13.0, z / 13.0, 0xB23L) + 1.0) * 4.0);
+			int pillarTop = ground + pillar;
+			BlockState stone = XishenBlocks.GRAY_STONE.defaultBlockState();
+			for (int y = ground + 1; y <= pillarTop; y++) {
+				chunk.setBlockState(new BlockPos(x, y, z), stone, false);
+			}
+			chunk.setBlockState(new BlockPos(x, pillarTop, z), XishenBlocks.GRAY_DIRT.defaultBlockState(), false);
+		}
+	}
+
+	/** 虚妄山脉：脊状噪声堆出 0~60 格的山脉，峰顶是灰石、山脚是灰土 */
+	private void buildVainRange(ChunkAccess chunk, int x, int z, int minY, int seaLevel) {
+		double ridge = 1.0 - Math.abs(valueNoise(x / 110.0, z / 110.0, 0xC31L));
+		double detail = (valueNoise(x / 34.0, z / 34.0, 0xC32L) + 1.0) * 0.5;
+		int h = (int) Math.round(Math.pow(ridge, 1.8) * 52.0 + detail * 10.0);
+		int top = seaLevel + Math.max(0, h);
+		BlockState topBlock = h > 14
+				? XishenBlocks.GRAY_STONE.defaultBlockState()
+				: XishenBlocks.GRAY_DIRT.defaultBlockState();
+		shapeColumn(chunk, x, z, minY, seaLevel, top, topBlock, XishenBlocks.GRAY_STONE.defaultBlockState());
+	}
+
 	/** 平缓起伏：0~5 格，用两层值噪声叠加（尺度 ~48 格和 ~24 格） */
 	private static int hillHeight(int x, int z) {
 		double n = valueNoise(x / 48.0, z / 48.0, 0x5EED_0001L) * 0.7

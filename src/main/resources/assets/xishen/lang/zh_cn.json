@@ -10,5 +10,8 @@
   "block.xishen.gray_grass_block": "灰草方块",
   "block.xishen.gray_stone": "灰石",
   "block.xishen.gray_gravel": "灰砾石",
-  "biome.xishen.ghost_abyss": "鬼嘲深渊"
+  "biome.xishen.ghost_abyss": "鬼嘲深渊",
+  "biome.xishen.rot_forest": "苦肉浊林",
+  "biome.xishen.sigh_plain": "叹息旷野",
+  "biome.xishen.vain_range": "虚妄山脉"
 }

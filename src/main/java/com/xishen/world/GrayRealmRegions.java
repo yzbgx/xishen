@@ -29,7 +29,10 @@ public final class GrayRealmRegions {
 	/** 设定区域 */
 	public static final List<Spec> SPECS = List.of(
 			new Spec("forbidden_sea", true, 550.0, 800.0),
-			new Spec("ghost_abyss", false, 450.0, 700.0));
+			new Spec("ghost_abyss", false, 450.0, 700.0),
+			new Spec("rot_forest", false, 500.0, 750.0),
+			new Spec("sigh_plain", false, 600.0, 900.0),
+			new Spec("vain_range", false, 550.0, 800.0));
 
 	/** 灰界这张地图的整体半径：超出去就是边界灰雾带 */
 	public static final double WORLD_RADIUS = 3000.0;
@@ -41,8 +44,8 @@ public final class GrayRealmRegions {
 	public static final double EDGE_LEVEL_STEP = 200.0;
 
 	/** 非固定区域的摆放环半径范围 */
-	public static final double RING_MIN = 1500.0;
-	public static final double RING_MAX = 2200.0;
+	public static final double RING_MIN = 1900.0;
+	public static final double RING_MAX = 2250.0;
 
 	/** 两个区域之间至少留出多宽的灰雾带（格） */
 	public static final double REGION_GAP = 350.0;

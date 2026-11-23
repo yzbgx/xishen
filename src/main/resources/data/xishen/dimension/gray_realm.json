@@ -7,7 +7,10 @@
       "type": "xishen:gray_realm",
       "regions": {
         "forbidden_sea": "xishen:forbidden_sea",
-        "ghost_abyss": "xishen:ghost_abyss"
+        "ghost_abyss": "xishen:ghost_abyss",
+        "rot_forest": "xishen:rot_forest",
+        "sigh_plain": "xishen:sigh_plain",
+        "vain_range": "xishen:vain_range"
       },
       "fog_band": "xishen:gray_fog",
       "edge": "xishen:gray_fog_edge"
