@@ -62,14 +62,14 @@ public final class GrayRealmCommands {
 	private static int listRegions(CommandContext<CommandSourceStack> context) {
 		GrayRealmLayout layout = layoutOf(context.getSource().getServer().getLevel(GrayRealmTicker.GRAY_REALM));
 		if (layout == null) {
-			context.getSource().sendFailure(Component.literal("灰界还没生成过区块，先传送进去一次。"));
+			context.getSource().sendFailure(Component.literal("Gray Realm has no generated chunks yet; enter it once first."));
 			return 0;
 		}
 		List<GrayRealmLayout.PlacedRegion> regions = layout.regions();
-		context.getSource().sendSuccess(() -> Component.literal("灰界区域（共 " + regions.size() + " 个）："), false);
+		context.getSource().sendSuccess(() -> Component.literal("Gray Realm regions (" + regions.size() + "):"), false);
 		for (GrayRealmLayout.PlacedRegion region : regions) {
 			context.getSource().sendSuccess(() -> Component.literal(String.format(
-					"  %s  ← 中心 (%d, %d)，半径 %d",
+					"  %s center=(%d,%d) radius=%d",
 					region.id(), (int) region.centerX(), (int) region.centerZ(), (int) region.radius())), false);
 		}
 		return regions.size();
@@ -79,17 +79,17 @@ public final class GrayRealmCommands {
 		String regionId = StringArgumentType.getString(context, "region");
 		ServerLevel level = context.getSource().getServer().getLevel(GrayRealmTicker.GRAY_REALM);
 		if (level == null) {
-			context.getSource().sendFailure(Component.literal("找不到灰界维度。"));
+			context.getSource().sendFailure(Component.literal("Gray Realm dimension not found."));
 			return 0;
 		}
 		GrayRealmLayout layout = layoutOf(level);
 		if (layout == null) {
-			context.getSource().sendFailure(Component.literal("灰界还没生成过区块，先在灰界里待一下再试。"));
+			context.getSource().sendFailure(Component.literal("Gray Realm has no generated chunks yet."));
 			return 0;
 		}
 		GrayRealmLayout.PlacedRegion region = layout.regionById(regionId);
 		if (region == null) {
-			context.getSource().sendFailure(Component.literal("没有叫 " + regionId + " 的区域。用 /xishen regions 看列表。"));
+			context.getSource().sendFailure(Component.literal("No region named " + regionId + ". Use /xishen regions."));
 			return 0;
 		}
 
@@ -101,7 +101,7 @@ public final class GrayRealmCommands {
 
 		player.teleportTo(level, x + 0.5, y, z + 0.5, player.getYRot(), player.getXRot());
 		context.getSource().sendSuccess(() -> Component.literal(String.format(
-				"已传送到 %s 的正中心（%d, %d, %d）", region.id(), x, y, z)), false);
+				"Teleported to center of %s at (%d, %d, %d)", region.id(), x, y, z)), false);
 		return 1;
 	}
 }

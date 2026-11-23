@@ -29,7 +29,143 @@
     [],
     [],
     [],
-    [],
+    [
+      {
+        "feature": "xishen:flesh_tree_big",
+        "placement": [
+          {
+            "type": "minecraft:count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min_inclusive": 1,
+              "max_inclusive": 2
+            }
+          },
+          {
+            "type": "minecraft:in_square"
+          },
+          {
+            "type": "minecraft:surface_water_depth_filter",
+            "max_water_depth": 0
+          },
+          {
+            "type": "minecraft:heightmap",
+            "heightmap": "MOTION_BLOCKING"
+          },
+          {
+            "type": "minecraft:biome"
+          }
+        ]
+      },
+      {
+        "feature": "xishen:flesh_tree_tall",
+        "placement": [
+          {
+            "type": "minecraft:count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min_inclusive": 1,
+              "max_inclusive": 3
+            }
+          },
+          {
+            "type": "minecraft:in_square"
+          },
+          {
+            "type": "minecraft:surface_water_depth_filter",
+            "max_water_depth": 0
+          },
+          {
+            "type": "minecraft:heightmap",
+            "heightmap": "MOTION_BLOCKING"
+          },
+          {
+            "type": "minecraft:biome"
+          }
+        ]
+      },
+      {
+        "feature": "xishen:flesh_tree_flat",
+        "placement": [
+          {
+            "type": "minecraft:count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min_inclusive": 1,
+              "max_inclusive": 2
+            }
+          },
+          {
+            "type": "minecraft:in_square"
+          },
+          {
+            "type": "minecraft:surface_water_depth_filter",
+            "max_water_depth": 0
+          },
+          {
+            "type": "minecraft:heightmap",
+            "heightmap": "MOTION_BLOCKING"
+          },
+          {
+            "type": "minecraft:biome"
+          }
+        ]
+      },
+      {
+        "feature": "xishen:flesh_tree_medium",
+        "placement": [
+          {
+            "type": "minecraft:count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min_inclusive": 2,
+              "max_inclusive": 4
+            }
+          },
+          {
+            "type": "minecraft:in_square"
+          },
+          {
+            "type": "minecraft:surface_water_depth_filter",
+            "max_water_depth": 0
+          },
+          {
+            "type": "minecraft:heightmap",
+            "heightmap": "MOTION_BLOCKING"
+          },
+          {
+            "type": "minecraft:biome"
+          }
+        ]
+      },
+      {
+        "feature": "xishen:flesh_tree_small",
+        "placement": [
+          {
+            "type": "minecraft:count",
+            "count": {
+              "type": "minecraft:uniform",
+              "min_inclusive": 3,
+              "max_inclusive": 6
+            }
+          },
+          {
+            "type": "minecraft:in_square"
+          },
+          {
+            "type": "minecraft:surface_water_depth_filter",
+            "max_water_depth": 0
+          },
+          {
+            "type": "minecraft:heightmap",
+            "heightmap": "MOTION_BLOCKING"
+          },
+          {
+            "type": "minecraft:biome"
+          }
+        ]
+      }
+    ],
     []
   ],
   "has_precipitation": true,

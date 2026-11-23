@@ -203,9 +203,11 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 	}
 
 	/**
-	 * 鬼嘲深渊：在区域里挖一个"碗形深渊"。
-	 * 越靠近区域中心越深（最深约 70 格，中心底部 y≈26），按 3 格一台阶做成阶梯状陡壁；
-	 * 底部铺灰土、墙壁和内部是灰石，上方抽成空气（没有水，也没有岛）。
+	 * 鬼嘲深渊：一条贯穿区域的**大峡谷**（不是圆坑）。
+	 *
+	 * 走向由区域中心的哈希决定（每个世界固定一条），中心线沿走向来回摆动，宽度 24~42 格；
+	 * 中间最深约 96 格（谷底 y≈0），两端逐渐收浅，谷壁按 4 格一台阶形成陡崖；
+	 * 谷底铺灰土 / 零散灰砾石，峡谷之外是灰草台地。
 	 */
 	private void carveAbyss(ChunkAccess chunk, GrayRealmLayout layout, int x, int z, int minY, int seaLevel) {
 		GrayRealmLayout.PlacedRegion abyss = layout.regionById("ghost_abyss");
@@ -214,33 +216,60 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 		}
 		BlockState stone = XishenBlocks.GRAY_STONE.defaultBlockState();
 		BlockState dirt = XishenBlocks.GRAY_DIRT.defaultBlockState();
+		BlockState grass = XishenBlocks.GRAY_GRASS_BLOCK.defaultBlockState();
 		BlockState air = Blocks.AIR.defaultBlockState();
 
-		double distance = Math.hypot(x - abyss.centerX(), z - abyss.centerZ());
-		double ratio = Math.min(1.0, distance / abyss.radius());
-		int depth = (int) Math.round(Math.pow(1.0 - ratio, 1.25) * 70.0);
-		int floor = seaLevel - (depth / 3) * 3;   // 3 格一个台阶
+		double dx = x - abyss.centerX();
+		double dz = z - abyss.centerZ();
+		double radius = abyss.radius();
 
-		// 坑底以下：只补 8 格（再往下本来就是实心，没必要整列重写，省性能）
-		for (int y = Math.max(minY, floor - 8); y <= floor; y++) {
+		// 峡谷走向（用区域中心做种子，每个世界/区域固定一条）
+		double angle = (hash(0xAB1L, (int) abyss.centerX(), (int) abyss.centerZ()) + 1.0) * Math.PI;
+		double ux = Math.cos(angle);
+		double uz = Math.sin(angle);
+		double along = dx * ux + dz * uz;
+		double perp = -dx * uz + dz * ux;
+
+		// 峡谷外的台地地面
+		int ground = seaLevel + (int) Math.round(valueNoise(x / 80.0, z / 80.0, 0xAB2L) * 2.0);
+
+		// 中心线摆动 + 宽度变化
+		double wobble = valueNoise(along / 80.0, 7.0, 0xAB3L) * 42.0;
+		double halfWidth = 24.0 + (valueNoise(along / 140.0, 31.0, 0xAB4L) + 1.0) * 9.0;
+		double dist = Math.abs(perp - wobble);
+
+		double taper = Math.max(0.0, 1.0 - Math.pow(Math.min(1.0, Math.abs(along) / (radius * 1.05)), 2.0));
+		double depth = 0.0;
+		if (dist < halfWidth) {
+			double side = Math.cos((dist / halfWidth) * Math.PI / 2.0);
+			depth = 96.0 * taper * Math.pow(side, 0.75);
+		}
+
+		if (depth < 2.0) {
+			shapeColumn(chunk, x, z, minY, seaLevel, ground, grass, dirt);
+			return;
+		}
+
+		int floor = (int) Math.round((seaLevel - depth) / 4.0) * 4;
+
+		for (int y = minY; y <= floor; y++) {
 			BlockPos pos = new BlockPos(x, y, z);
 			BlockState current = chunk.getBlockState(pos);
 			if (current.isAir() || !current.getFluidState().isEmpty()) {
 				chunk.setBlockState(pos, stone, false);
 			}
 		}
-		// 坑底以上到海平面：抽空（水、土、石头全部挖掉，形成陡壁）
-		for (int y = floor + 1; y <= seaLevel; y++) {
+		int clearTop = Math.max(ground, seaLevel) + 8;
+		for (int y = floor + 1; y <= clearTop; y++) {
 			BlockPos pos = new BlockPos(x, y, z);
 			if (!chunk.getBlockState(pos).isAir()) {
 				chunk.setBlockState(pos, air, false);
 			}
 		}
-		// 坑底地表：灰土
-		chunk.setBlockState(new BlockPos(x, floor, z), dirt, false);
-		if (floor - 1 >= minY) {
-			chunk.setBlockState(new BlockPos(x, floor - 1, z), stone, false);
-		}
+		BlockState floorTop = valueNoise(x / 9.0, z / 9.0, 0xAB5L) > 0.45
+				? XishenBlocks.GRAY_GRAVEL.defaultBlockState()
+				: dirt;
+		chunk.setBlockState(new BlockPos(x, floor, z), floorTop, false);
 	}
 	/**
 	 * 通用塑形：先把 top 以上的水抽干、把山体填实，再铺顶层方块。
@@ -275,76 +304,58 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 		chunk.setBlockState(new BlockPos(x, top, z), topBlock, false);
 	}
 
-	/** 叹息旷野：一望无际的平坦旷野，只有 0~3 格缓起伏，地表灰草 */
+	/**
+	 * 叹息旷野：一望无际的旷野。
+	 *
+	 * 和"灰雾带"（纯平）区分开：这里有 0~3 格缓起伏，还散布着**浅坑洼地**（风蚀地貌），
+	 * 让地面看上去有起伏和层次，而不是一张灰纸。
+	 */
 	private void buildSighPlain(ChunkAccess chunk, int x, int z, int minY, int seaLevel) {
-		int h = (int) Math.round((valueNoise(x / 70.0, z / 70.0, 0xA11L) + 1.0) * 1.5);
-		int top = seaLevel + Math.max(0, Math.min(3, h));
+		double n = valueNoise(x / 70.0, z / 70.0, 0xA11L) * 0.7
+				+ valueNoise(x / 28.0, z / 28.0, 0xA12L) * 0.3;
+		int top = seaLevel + Math.max(0, Math.min(3, (int) Math.round((n + 1.0) * 1.8)));
+
+		int cell = 96;
+		int cellX = Math.floorDiv(x, cell);
+		int cellZ = Math.floorDiv(z, cell);
+		for (int ox = -1; ox <= 1; ox++) {
+			for (int oz = -1; oz <= 1; oz++) {
+				long bits = hashBits(cellX + ox, cellZ + oz, 0x9A11L);
+				if ((bits & 0xFF) > 110) {
+					continue;
+				}
+				double px = (cellX + ox) * cell + (bits >>> 8 & 63);
+				double pz = (cellZ + oz) * cell + (bits >>> 16 & 63);
+				double r = 10.0 + (bits >>> 24 & 15);
+				double d = Math.hypot(x - px, z - pz);
+				if (d < r) {
+					int dip = (int) Math.round(5.0 * Math.cos((d / r) * Math.PI / 2.0));
+					top -= dip;
+				}
+			}
+		}
+
 		shapeColumn(chunk, x, z, minY, seaLevel, top,
 				XishenBlocks.GRAY_GRASS_BLOCK.defaultBlockState(),
 				XishenBlocks.GRAY_DIRT.defaultBlockState());
 	}
 
 	/**
-	 * 苦肉浊林：血肉丛林。
+	 * 苦肉浊林：血肉丛林的地面（树由 biome 里的 tree 特征生成，见 data/xishen/worldgen/configured_feature）。
 	 *
-	 * 按原著"血肉丛生的林间"来做：地面是灰草灰土，上面长**血肉树**——
-	 * 树干是血肉原木（5~8 格高），树冠是血肉簇（3×3、两层），树冠边缘再垂下一圈肉块。
-	 * 6×6 一格随机长一棵（带偏移，所以不会排成棋盘），密度约 65%。
+	 * 这里只做地表：灰草 + 0~2 格缓起伏，给树留出生长空间。
 	 */
 	private void buildRotForest(ChunkAccess chunk, int x, int z, int minY, int seaLevel) {
 		int ground = forestGround(x, z, seaLevel);
 		shapeColumn(chunk, x, z, minY, seaLevel, ground,
 				XishenBlocks.GRAY_GRASS_BLOCK.defaultBlockState(),
 				XishenBlocks.GRAY_DIRT.defaultBlockState());
-
-		BlockState log = XishenBlocks.FLESH_LOG.defaultBlockState();
-		BlockState leaves = XishenBlocks.FLESH_LEAVES.defaultBlockState();
-		int spacing = 6;
-
-		for (int cellX = Math.floorDiv(x - 1, spacing); cellX <= Math.floorDiv(x + 1, spacing); cellX++) {
-			for (int cellZ = Math.floorDiv(z - 1, spacing); cellZ <= Math.floorDiv(z + 1, spacing); cellZ++) {
-				long bits = hashBits(cellX, cellZ, 0x5EED_F1E5L);
-				if ((bits & 0xFF) > 165) {
-					continue; // 这一格没有树
-				}
-				int treeX = cellX * spacing + (int) ((bits >>> 8) & 3);
-				int treeZ = cellZ * spacing + (int) ((bits >>> 12) & 3);
-				int dx = x - treeX;
-				int dz = z - treeZ;
-				if (Math.abs(dx) > 1 || Math.abs(dz) > 1) {
-					continue;
-				}
-				int trunk = 5 + (int) ((bits >>> 16) & 3);
-				int base = forestGround(treeX, treeZ, seaLevel);
-
-				if (dx == 0 && dz == 0) {
-					for (int y = 1; y <= trunk; y++) {
-						chunk.setBlockState(new BlockPos(x, base + y, z), log, false);
-					}
-				}
-				// 树冠：两层 3x3
-				setIfAir(chunk, x, base + trunk, z, leaves);
-				setIfAir(chunk, x, base + trunk + 1, z, leaves);
-				// 树冠下沿垂一圈肉
-				if (Math.abs(dx) + Math.abs(dz) >= 1) {
-					setIfAir(chunk, x, base + trunk - 1, z, leaves);
-				}
-			}
-		}
 	}
 
 	/** 血肉林的地面高度：海平面 + 0~2 格缓起伏 */
 	private int forestGround(int x, int z, int seaLevel) {
 		int h = (int) Math.round((valueNoise(x / 60.0, z / 60.0, 0xB21L) + 1.0));
 		return seaLevel + Math.max(0, Math.min(2, h));
-	}
-
-	/** 只有空气才放方块（避免树叶盖掉树干） */
-	private void setIfAir(ChunkAccess chunk, int x, int y, int z, BlockState state) {
-		BlockPos pos = new BlockPos(x, y, z);
-		if (chunk.getBlockState(pos).isAir()) {
-			chunk.setBlockState(pos, state, false);
-		}
 	}
 
 	/** 位置哈希（用于决定树的位置/高度，确定性） */
@@ -356,24 +367,38 @@ public class GrayRealmChunkGenerator extends ChunkGenerator {
 		return h;
 	}
 
-	/** 虚妄山脉：脊状噪声堆出 0~60 格的山脉，峰顶是灰石、山脚是灰土 */
+	/**
+	 * 虚妄山脉：脊状噪声堆出 0~60 格的山脉。
+	 *
+	 * 表层按**坡度**决定：陡壁（相邻高度差 ≥6）露灰石，缓坡和盆地一律铺灰草，
+	 * 所以不管多低的盆地都有土层，只有悬崖才露岩石。
+	 */
 	private void buildVainRange(ChunkAccess chunk, int x, int z, int minY, int seaLevel) {
-		double ridge = 1.0 - Math.abs(valueNoise(x / 110.0, z / 110.0, 0xC31L));
-		double detail = (valueNoise(x / 34.0, z / 34.0, 0xC32L) + 1.0) * 0.5;
-		int h = (int) Math.round(Math.pow(ridge, 1.8) * 52.0 + detail * 10.0);
-		int top = seaLevel + Math.max(0, h);
-		BlockState topBlock = h > 14
+		int h = vainHeight(x, z);
+		int top = seaLevel + h;
+		int slope = Math.max(Math.max(Math.abs(h - vainHeight(x + 3, z)), Math.abs(h - vainHeight(x - 3, z))),
+				Math.max(Math.abs(h - vainHeight(x, z + 3)), Math.abs(h - vainHeight(x, z - 3))));
+		BlockState topBlock = slope >= 6
 				? XishenBlocks.GRAY_STONE.defaultBlockState()
-				: XishenBlocks.GRAY_DIRT.defaultBlockState();
+				: XishenBlocks.GRAY_GRASS_BLOCK.defaultBlockState();
 		shapeColumn(chunk, x, z, minY, seaLevel, top, topBlock, XishenBlocks.GRAY_STONE.defaultBlockState());
 	}
 
-	/** 平缓起伏：0~5 格，用两层值噪声叠加（尺度 ~48 格和 ~24 格） */
+	/** 虚妄山脉的高度（不含海平面） */
+	private static int vainHeight(int x, int z) {
+		double ridge = 1.0 - Math.abs(valueNoise(x / 110.0, z / 110.0, 0xC31L));
+		double detail = (valueNoise(x / 34.0, z / 34.0, 0xC32L) + 1.0) * 0.5;
+		return Math.max(0, (int) Math.round(Math.pow(ridge, 1.8) * 52.0 + detail * 10.0));
+	}
+
+	/**
+	 * 灰雾带的起伏：**纯平**（0 格）。
+	 *
+	 * 灰雾带是"什么都没有"的连接地带，平得像一张灰纸；
+	 * 起伏留给"叹息旷野"，山留给"虚妄山脉"。
+	 */
 	private static int hillHeight(int x, int z) {
-		double n = valueNoise(x / 48.0, z / 48.0, 0x5EED_0001L) * 0.7
-				+ valueNoise(x / 24.0, z / 24.0, 0x5EED_0002L) * 0.3;
-		int h = (int) Math.round((n + 1.0) * 2.5);
-		return Math.max(0, Math.min(5, h));
+		return 0;
 	}
 
 	private static double valueNoise(double x, double z, long seed) {
