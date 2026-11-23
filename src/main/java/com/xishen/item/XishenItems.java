@@ -71,6 +71,10 @@ public final class XishenItems {
 	public static final Item FLESH_HOE = reg("flesh_hoe", new HoeItem(Tiers.WOOD,
 			new Item.Properties().attributes(DiggerItem.createAttributes(Tiers.WOOD, -1.0F, -2.0F))));
 
+	// ---------------------------------------------------------------- 血肉船
+
+	public static final Item FLESH_BOAT = reg("flesh_boat", new FleshBoatItem(new Item.Properties().stacksTo(1)));
+
 	public static void register() {
 		// 战斗页：剑；工具页：镐斧锹锄
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.COMBAT).register(entries -> {
@@ -86,6 +90,7 @@ public final class XishenItems {
 			entries.accept(FLESH_AXE);
 			entries.accept(FLESH_SHOVEL);
 			entries.accept(FLESH_HOE);
+			entries.accept(FLESH_BOAT);
 		});
 	}
 

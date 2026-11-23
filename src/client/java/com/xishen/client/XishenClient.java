@@ -1,6 +1,10 @@
 package com.xishen.client;
 
+import com.xishen.entity.XishenEntities;
+
 import net.fabricmc.api.ClientModInitializer;
+
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 
 /**
  * 仅客户端的入口：渲染、按键绑定、HUD 之类只存在于客户端的逻辑写在这里。
@@ -9,6 +13,7 @@ import net.fabricmc.api.ClientModInitializer;
 public class XishenClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
-		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
+		// 血肉船的渲染器
+		EntityRendererRegistry.register(XishenEntities.FLESH_BOAT, FleshBoatRenderer::new);
 	}
 }

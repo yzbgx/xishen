@@ -188,6 +188,23 @@ MC mod\
 - 放在群系的 `features[9]`（植被装饰阶段），每个区块按 `count` + `in_square` + `heightmap` 随机落点
 - 灰土/灰草已加进 `#minecraft:dirt`，原版树、甘蔗、耕地这些逻辑都认我们的方块
 
+### 血肉船（`xishen:flesh_boat`）
+
+原版船是"按木材种类各做一个实体"，所以光加标签是没用的，这里做了完整的一条：
+
+| 部分 | 文件 |
+| --- | --- |
+| 实体（继承原版 `Boat`，划水/上船/破坏掉落全部沿用原版） | `src\main\java\com\xishen\entity\FleshBoat.java` |
+| 实体类型注册 | `com\xishen\entity\XishenEntities.java` |
+| 物品（照原版 `BoatItem` 的放置逻辑） | `com\xishen\item\FleshBoatItem.java` |
+| 客户端渲染（复用原版船模型 `BoatModel`，只换血肉贴图） | `src\client\java\com\xishen\client\FleshBoatRenderer.java` |
+| 贴图 | `assets\xishen\textures\entity\boat\flesh_boat.png`（船体）、`assets\xishen\textures\item\flesh_boat.png`（物品图标） |
+| 合成 | 血肉木板 `# #` / `###` → 1 艘（和原版船形状一样） |
+
+- 已加进 `minecraft:boats` 标签
+- 船只在水面上能用（和原版一样，放陆地上会碎成物品）
+- 船体贴图是把原版橡木船贴图重新染成暗红，所以模型形状、划桨动画和原版一致
+
 ### 工具（对应原版的石制 / 木制两套）
 
 | 材质 | 剑 | 镐 | 斧 | 锹 | 锄 |

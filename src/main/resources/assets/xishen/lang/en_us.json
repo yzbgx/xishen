@@ -44,5 +44,7 @@
   "item.xishen.flesh_pickaxe": "Flesh Pickaxe",
   "item.xishen.flesh_axe": "Flesh Axe",
   "item.xishen.flesh_shovel": "Flesh Shovel",
-  "item.xishen.flesh_hoe": "Flesh Hoe"
+  "item.xishen.flesh_hoe": "Flesh Hoe",
+  "item.xishen.flesh_boat": "Flesh Boat",
+  "entity.xishen.flesh_boat": "Flesh Boat"
 }

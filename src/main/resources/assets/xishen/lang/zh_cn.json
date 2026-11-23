@@ -44,5 +44,7 @@
   "item.xishen.flesh_pickaxe": "血肉镐",
   "item.xishen.flesh_axe": "血肉斧",
   "item.xishen.flesh_shovel": "血肉锹",
-  "item.xishen.flesh_hoe": "血肉锄"
+  "item.xishen.flesh_hoe": "血肉锄",
+  "item.xishen.flesh_boat": "血肉船",
+  "entity.xishen.flesh_boat": "血肉船"
 }
