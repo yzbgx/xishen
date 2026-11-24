@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 
+import com.xishen.path.PathCommands;
+
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
 import net.minecraft.commands.CommandSourceStack;
@@ -45,6 +47,7 @@ public final class GrayRealmCommands {
 		dispatcher.register(Commands.literal("xishen")
 				.requires(source -> source.hasPermission(2))
 				.then(Commands.literal("regions").executes(GrayRealmCommands::listRegions))
+				.then(PathCommands.branch())
 				.then(Commands.literal("tp")
 						.then(Commands.argument("region", StringArgumentType.word())
 								.suggests(REGION_SUGGESTIONS)
