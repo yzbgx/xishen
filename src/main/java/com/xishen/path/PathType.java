@@ -25,7 +25,7 @@ public enum PathType {
 	CHANG("chang", "娼", "Courtesan", 0xA05060);
 
 	/** 每条神道的最高等级（框架值，以后可调） */
-	public static final int MAX_LEVEL = 10;
+	public static final int MAX_LEVEL = 9;
 
 	public static final PathType[] ALL = values();
 	public static final int COUNT = ALL.length;
