@@ -38,3 +38,7 @@ hs_err_*.log
 replay_*.log
 *.hprof
 *.jfr
+
+# 本地测试日志（测试服重定向出来的那些）
+
+*.log
