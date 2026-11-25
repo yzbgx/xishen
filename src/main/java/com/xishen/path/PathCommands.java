@@ -38,12 +38,11 @@ public final class PathCommands {
 				.then(Commands.literal("points")
 						.then(Commands.argument("n", IntegerArgumentType.integer(0, 9999))
 								.executes(PathCommands::setPoints)))
-				.then(Commands.literal("add")
+				.then(Commands.literal("prof")
 						.then(Commands.argument("path", StringArgumentType.word())
 								.suggests(PATH_SUGGESTIONS)
-								.executes(context -> addLevel(context, 1))
-								.then(Commands.argument("n", IntegerArgumentType.integer(1, PathType.MAX_LEVEL))
-										.executes(context -> addLevel(context, IntegerArgumentType.getInteger(context, "n"))))))
+								.then(Commands.argument("n", IntegerArgumentType.integer(1, PathType.MAX_PROFICIENCY))
+										.executes(PathCommands::addProficiency))))
 				.then(Commands.literal("reset").executes(PathCommands::reset));
 	}
 
@@ -52,7 +51,8 @@ public final class PathCommands {
 		PathData data = PathAttachments.get(player);
 		StringBuilder sb = new StringBuilder("Paths (points=" + data.points() + "):");
 		for (PathType type : PathType.ALL) {
-			sb.append(' ').append(type.id()).append('=').append(data.level(type));
+			sb.append(' ').append(type.id()).append('=').append(data.proficiency(type))
+					.append("(Lv").append(data.level(type)).append(')');
 		}
 		String message = sb.toString();
 		context.getSource().sendSuccess(() -> Component.literal(message), false);
@@ -68,20 +68,21 @@ public final class PathCommands {
 		return n;
 	}
 
-	private static int addLevel(CommandContext<CommandSourceStack> context, int amount) throws CommandSyntaxException {
+	private static int addProficiency(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 		ServerPlayer player = context.getSource().getPlayerOrException();
 		String id = StringArgumentType.getString(context, "path");
+		int amount = IntegerArgumentType.getInteger(context, "n");
 		PathType type = PathType.byId(id);
 		if (type == null) {
 			context.getSource().sendFailure(Component.literal("Unknown path: " + id));
 			return 0;
 		}
-		PathData data = PathAttachments.get(player);
-		int old = data.level(type);
-		int updated = Math.min(PathType.MAX_LEVEL, old + amount);
-		PathAttachments.set(player, data.withLevel(type, updated));
+		int old = PathAttachments.get(player).proficiency(type);
+		PathProficiency.gain(player, type, amount);
+		int updated = PathAttachments.get(player).proficiency(type);
 		context.getSource().sendSuccess(() -> Component.literal(
-				"Path " + id + ": " + old + " -> " + updated), false);
+				"Path " + id + " proficiency: " + old + " -> " + updated
+						+ " (Lv" + PathType.levelFor(updated) + ")"), false);
 		return updated;
 	}
 

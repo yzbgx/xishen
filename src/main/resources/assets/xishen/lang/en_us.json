@@ -66,5 +66,7 @@
   "gui.xishen.paths.level": "Level %s / %s",
   "gui.xishen.paths.button": "Paths",
   "key.xishen.paths": "Open Paths",
-  "category.xishen": "Xishen"
+  "category.xishen": "Xishen",
+  "gui.xishen.paths.tier": "Tier %s / %s",
+  "gui.xishen.paths.inactive": "Inactive %s / %s"
 }

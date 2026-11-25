@@ -5,6 +5,7 @@ import com.xishen.entity.XishenEntities;
 import com.xishen.item.XishenItems;
 import com.xishen.path.PathAttachments;
 import com.xishen.path.PathNetworking;
+import com.xishen.path.PathProficiency;
 import com.xishen.effect.GrayErosionEdgeEffect;
 import com.xishen.effect.GrayErosionEffect;
 import com.xishen.world.GrayRealmBiomeSource;
@@ -61,6 +62,7 @@ public class XishenMod implements ModInitializer {
 		XishenEntities.register();
 		PathAttachments.register();
 		PathNetworking.register();
+		PathProficiency.register();
 
 		// 注册 /xishen 指令（regions 列表、tp 传送到区域正中心）
 		GrayRealmCommands.register();

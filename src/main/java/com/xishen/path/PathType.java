@@ -4,9 +4,13 @@ package com.xishen.path;
  * 十四神道。
  *
  * <p>原书里的十四大道："书医兵黄青巧弈，戏偶巫力卜盗娼"。
- * 这里只做框架：每条神道有 id、中英文名和代表色，等级/加点内容以后再加。
  *
- * <p>id 用拼音（"弈"和"医"同音，所以弈用 {@code yix} 区分）。
+ * <p>等级规则（框架）：
+ * <ul>
+ *   <li>每条神道先攒**职业熟练度**（0 ~ 900）</li>
+ *   <li>熟练度到 {@link #ACTIVATION_PROFICIENCY}(100) 时**激活**该神道（以后接"神道星邀请"）</li>
+ *   <li>激活后每多 100 熟练度 = +1 阶，最高 {@link #MAX_LEVEL}(9) 阶</li>
+ * </ul>
  */
 public enum PathType {
 	SHU("shu", "书", "Book", 0x8A6A3B),
@@ -24,8 +28,17 @@ public enum PathType {
 	DAO("dao", "盗", "Thief", 0x505050),
 	CHANG("chang", "娼", "Courtesan", 0xA05060);
 
-	/** 每条神道的最高等级（框架值，以后可调） */
+	/** 激活一条神道需要的熟练度 */
+	public static final int ACTIVATION_PROFICIENCY = 100;
+
+	/** 每提升一阶需要的熟练度（激活后再攒 100 升 1 阶） */
+	public static final int PROFICIENCY_PER_LEVEL = 100;
+
+	/** 满阶（由用户定为 9 阶） */
 	public static final int MAX_LEVEL = 9;
+
+	/** 熟练度上限：9 阶 = 900 */
+	public static final int MAX_PROFICIENCY = MAX_LEVEL * PROFICIENCY_PER_LEVEL;
 
 	public static final PathType[] ALL = values();
 	public static final int COUNT = ALL.length;
@@ -61,6 +74,16 @@ public enum PathType {
 	/** 翻译键：path.xishen.<id> */
 	public String translationKey() {
 		return "path.xishen." + this.id;
+	}
+
+	/** 这个熟练度算到第几阶（未激活 = 0） */
+	public static int levelFor(int proficiency) {
+		return Math.max(0, Math.min(MAX_LEVEL, proficiency / PROFICIENCY_PER_LEVEL));
+	}
+
+	/** 熟练度够不够激活 */
+	public static boolean isActivated(int proficiency) {
+		return proficiency >= ACTIVATION_PROFICIENCY;
 	}
 
 	public static PathType byId(String id) {

@@ -20,11 +20,13 @@ import java.util.Map;
 /**
  * 神道界面（参考 Reskillable 的技能页 + 饰品栏 mod 的入口按钮）。
  *
- * <p>布局：一个面板，14 条神道分两列（每列 7 条），每条显示：
- * 代表色方块 + 神道名 + 当前等级 + 进度条 + 「+」按钮。
+ * <p>14 条神道，每条显示：代表色方块 + 名字 + **职业熟练度** + 状态（未激活 / 第 N 阶）+ 「+」按钮。
  *
- * <p>点「+」= 消耗 1 点加点、该神道 +1 级（服务端校验，数据自动同步回来）。
- * 至于加点从哪来（升级/任务/击杀），规则还没定，现在只能用指令给自己发点数。
+ * <ul>
+ *   <li>熟练度 0~99：显示「未激活」，进度条按 0~100 走</li>
+ *   <li>熟练度 ≥100：激活，显示「第 N 阶 / 9」，进度条按当前阶内的进度走</li>
+ *   <li>点「+」= 消耗 1 点加点，熟练度 +{@link PathNetworking#PROFICIENCY_PER_POINT}</li>
+ * </ul>
  */
 public class PathScreen extends Screen {
 	private static final int PANEL_W = 344;
@@ -91,42 +93,58 @@ public class PathScreen extends Screen {
 			int x = left + 10 + column * COLUMN_W;
 			int y = top + 30 + row * ROW_H;
 
-			// 代表色方块 + 汉字
-			graphics.fill(x, y, x + 20, y + 20, 0xFF000000 | type.color());
-			graphics.fill(x + 1, y + 1, x + 19, y + 19, 0xFF000000 | darken(type.color()));
+			int proficiency = data.proficiency(type);
+			int level = typeLevel(data, type);
+			boolean activated = proficiency >= PathType.ACTIVATION_PROFICIENCY;
+
+			// 代表色方块 + 汉字（激活后更亮）
+			int color = type.color();
+			if (!activated) {
+				color = darken(color, 0.45F);
+			}
+			graphics.fill(x, y, x + 20, y + 20, 0xFF000000 | color);
+			graphics.fill(x + 1, y + 1, x + 19, y + 19, 0xFF000000 | darken(color, 0.55F));
 			graphics.drawCenteredString(this.font, type.zhName(), x + 10, y + 6, 0xFFFFFF);
 
 			// 名字
-			graphics.drawString(this.font, Component.translatable(type.translationKey()), x + 26, y + 3, 0xFFFFFF, false);
-			// 等级
-			int level = data.level(type);
-			String levelText = Component.translatable("gui.xishen.paths.level", level, PathType.MAX_LEVEL).getString();
-			graphics.drawString(this.font, levelText, x + 26, y + 14, 0xA0A0A0, false);
+			graphics.drawString(this.font, Component.translatable(type.translationKey()), x + 26, y + 2, 0xFFFFFF, false);
 
-			// 等级进度条
+			// 状态：未激活 / 第 N 阶
+			String status = activated
+					? Component.translatable("gui.xishen.paths.tier", level, PathType.MAX_LEVEL).getString()
+					: Component.translatable("gui.xishen.paths.inactive", proficiency, PathType.ACTIVATION_PROFICIENCY).getString();
+			graphics.drawString(this.font, status, x + 26, y + 12, activated ? 0xE0E0A0 : 0x909090, false);
+
+			// 进度条：未激活按 0~100，已激活按当前阶内 0~100
 			int barX = x + 26;
-			int barY = y + 24;
+			int barY = y + 22;
 			int barW = 108;
+			int within = activated
+					? (proficiency % PathType.PROFICIENCY_PER_LEVEL)
+					: proficiency;
 			graphics.fill(barX, barY, barX + barW, barY + 2, 0xFF2A2A2A);
-			int filled = (int) Math.round(barW * (level / (double) PathType.MAX_LEVEL));
+			int filled = (int) Math.round(barW * (within / (double) PathType.PROFICIENCY_PER_LEVEL));
 			if (filled > 0) {
 				graphics.fill(barX, barY, barX + filled, barY + 2, 0xFF000000 | type.color());
 			}
 
-			// 「+」只有在还有点数、且没满级时才能点
 			Button plus = this.plusButtons.get(type);
 			if (plus != null) {
-				plus.active = data.points() > 0 && level < PathType.MAX_LEVEL;
+				plus.active = data.points() > 0 && proficiency < PathType.MAX_PROFICIENCY;
 			}
 		}
 
 		super.render(graphics, mouseX, mouseY, partialTick);
 	}
 
-	private static int darken(int color) {
-		int r = (int) (((color >> 16) & 0xFF) * 0.55);
-		int g = (int) (((color >> 8) & 0xFF) * 0.55);
-		int b = (int) ((color & 0xFF) * 0.55);
+	private static int typeLevel(PathData data, PathType type) {
+		return data.level(type);
+	}
+
+	private static int darken(int color, float factor) {
+		int r = (int) (((color >> 16) & 0xFF) * factor);
+		int g = (int) (((color >> 8) & 0xFF) * factor);
+		int b = (int) ((color & 0xFF) * factor);
 		return (r << 16) | (g << 8) | b;
 	}
 

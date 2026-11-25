@@ -66,5 +66,7 @@
   "gui.xishen.paths.level": "等级 %s / %s",
   "gui.xishen.paths.button": "神道",
   "key.xishen.paths": "打开神道界面",
-  "category.xishen": "戏神"
+  "category.xishen": "戏神",
+  "gui.xishen.paths.tier": "第 %s 阶 / %s",
+  "gui.xishen.paths.inactive": "未激活 %s / %s"
 }
