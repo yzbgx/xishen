@@ -22,6 +22,10 @@ public final class PathFeedback {
 			return;
 		}
 
+		// 先把"效果"钩子留出来（内容以后再填）
+		PathEffects.onTierUp(player, type, newLevel);
+		PathEffects.applyPassive(player);
+
 		if (oldLevel == 0 && newLevel >= 1) {
 			// 刚激活
 			player.sendSystemMessage(Component.translatable("message.xishen.path.activated", type.zhName())
