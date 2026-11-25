@@ -15,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -83,6 +84,7 @@ public class PathScreen extends Screen {
 		graphics.drawCenteredString(this.font, this.title, this.width / 2, top + 8, 0xFFFFFF);
 
 		PathData data = clientData();
+		PathType hovered = null;
 		String points = Component.translatable("gui.xishen.paths.points", data.points()).getString();
 		graphics.drawString(this.font, points, left + 10, top + PANEL_H - 20, 0xC8C8C8, false);
 
@@ -128,6 +130,10 @@ public class PathScreen extends Screen {
 				graphics.fill(barX, barY, barX + filled, barY + 2, 0xFF000000 | type.color());
 			}
 
+			if (mouseX >= x && mouseX < x + 158 && mouseY >= y && mouseY < y + ROW_H - 4) {
+				hovered = type;
+			}
+
 			Button plus = this.plusButtons.get(type);
 			if (plus != null) {
 				plus.active = data.points() > 0 && proficiency < PathType.MAX_PROFICIENCY;
@@ -135,6 +141,21 @@ public class PathScreen extends Screen {
 		}
 
 		super.render(graphics, mouseX, mouseY, partialTick);
+
+		if (hovered != null && plusTooltipExpired(hovered, data)) {
+			graphics.renderComponentTooltip(this.font, List.of(
+					Component.translatable(hovered.translationKey()),
+					Component.translatable("gui.xishen.paths.source", Component.translatable(hovered.sourceKey()))
+							.withStyle(net.minecraft.ChatFormatting.GRAY),
+					Component.translatable("gui.xishen.paths.prof", data.proficiency(hovered),
+							PathType.MAX_PROFICIENCY).withStyle(net.minecraft.ChatFormatting.DARK_GRAY)
+			), mouseX, mouseY);
+		}
+	}
+
+	/** 这里只是占位，方便以后加"悬停条件"，现在始终显示 */
+	private static boolean plusTooltipExpired(PathType type, PathData data) {
+		return true;
 	}
 
 	private static int typeLevel(PathData data, PathType type) {

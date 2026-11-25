@@ -70,5 +70,21 @@
   "gui.xishen.paths.tier": "第 %s 阶 / %s",
   "gui.xishen.paths.inactive": "未激活 %s / %s",
   "message.xishen.path.activated": "你觉醒了%s！",
-  "message.xishen.path.tier_up": "%s 提升到第 %s 阶"
+  "message.xishen.path.tier_up": "%s 提升到第 %s 阶",
+  "path.xishen.shu.source": "使用附魔台附魔（+2/次）",
+  "path.xishen.yi.source": "吃东西（+2/次）",
+  "path.xishen.bing.source": "普通击杀生物（+3/次）",
+  "path.xishen.huang.source": "收割作物（+1）、与村民交易（+2）",
+  "path.xishen.qing.source": "放置画作（+3/次）",
+  "path.xishen.qiao.source": "合成物品（+2）、放置方块（+1）",
+  "path.xishen.yix.source": "放置红石元件（+1/次）",
+  "path.xishen.xi.source": "音符盒 / 唱片机（+2/次）",
+  "path.xishen.ou.source": "驯服动物（+2/次）",
+  "path.xishen.wu.source": "使用酿造台（+2/次）",
+  "path.xishen.li.source": "挖任意方块（+1/个）",
+  "path.xishen.bu.source": "使用末影之眼（+3）、进入新群系（+2）",
+  "path.xishen.dao.source": "打开箱子 / 木桶（+1/次）",
+  "path.xishen.chang.source": "潜行状态下击杀（+5/次）",
+  "gui.xishen.paths.source": "来源：%s",
+  "gui.xishen.paths.prof": "熟练度 %s / %s"
 }

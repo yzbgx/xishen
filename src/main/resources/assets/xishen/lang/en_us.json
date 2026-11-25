@@ -70,5 +70,21 @@
   "gui.xishen.paths.tier": "Tier %s / %s",
   "gui.xishen.paths.inactive": "Inactive %s / %s",
   "message.xishen.path.activated": "You have awakened the %s!",
-  "message.xishen.path.tier_up": "%s advanced to tier %s"
+  "message.xishen.path.tier_up": "%s advanced to tier %s",
+  "path.xishen.shu.source": "Use an enchanting table (+2)",
+  "path.xishen.yi.source": "Eat food (+2)",
+  "path.xishen.bing.source": "Kill mobs normally (+3)",
+  "path.xishen.huang.source": "Harvest crops (+1), trade with villagers (+2)",
+  "path.xishen.qing.source": "Place paintings (+3)",
+  "path.xishen.qiao.source": "Craft items (+2), place blocks (+1)",
+  "path.xishen.yix.source": "Place redstone components (+1)",
+  "path.xishen.xi.source": "Note blocks / jukeboxes (+2)",
+  "path.xishen.ou.source": "Tame animals (+2)",
+  "path.xishen.wu.source": "Use a brewing stand (+2)",
+  "path.xishen.li.source": "Mine any block (+1)",
+  "path.xishen.bu.source": "Throw an eye of ender (+3), enter a new biome (+2)",
+  "path.xishen.dao.source": "Open chests / barrels (+1)",
+  "path.xishen.chang.source": "Kill while sneaking (+5)",
+  "gui.xishen.paths.source": "Source: %s",
+  "gui.xishen.paths.prof": "Proficiency %s / %s"
 }

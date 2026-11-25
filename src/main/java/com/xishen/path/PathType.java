@@ -76,6 +76,11 @@ public enum PathType {
 		return "path.xishen." + this.id;
 	}
 
+	/** 来源说明的翻译键：path.xishen.<id>.source */
+	public String sourceKey() {
+		return "path.xishen." + this.id + ".source";
+	}
+
 	/** 这个熟练度算到第几阶（未激活 = 0） */
 	public static int levelFor(int proficiency) {
 		return Math.max(0, Math.min(MAX_LEVEL, proficiency / PROFICIENCY_PER_LEVEL));
