@@ -48,4 +48,10 @@ public final class PathValues {
 
 	/** 1 点加点换多少熟练度 */
 	public static final int PROFICIENCY_PER_POINT = 10;
+
+	/**
+	 * 一条神道**激活**时奖励多少加点（默认 1）。
+	 * 这是"加点从哪来"的临时规则：以后改成升级给/任务给，只改这里或换成别的事件。
+	 */
+	public static final int ACTIVATION_POINT_REWARD = 1;
 }

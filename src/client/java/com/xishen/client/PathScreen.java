@@ -111,11 +111,13 @@ public class PathScreen extends Screen {
 			// 名字
 			graphics.drawString(this.font, Component.translatable(type.translationKey()), x + 26, y + 2, 0xFFFFFF, false);
 
-			// 状态：未激活 / 第 N 阶
+			// 状态：未激活 / 第 N 阶，后面跟熟练度数字
 			String status = activated
 					? Component.translatable("gui.xishen.paths.tier", level, PathType.MAX_LEVEL).getString()
 					: Component.translatable("gui.xishen.paths.inactive", proficiency, PathType.ACTIVATION_PROFICIENCY).getString();
+			String numbers = proficiency + " / " + PathType.MAX_PROFICIENCY;
 			graphics.drawString(this.font, status, x + 26, y + 12, activated ? 0xE0E0A0 : 0x909090, false);
+			graphics.drawString(this.font, numbers, x + 104, y + 12, 0x707070, false);
 
 			// 进度条：未激活按 0~100，已激活按当前阶内 0~100
 			int barX = x + 26;
