@@ -19,7 +19,6 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -67,11 +66,6 @@ public final class PathProficiency {
 	private static final Map<UUID, Integer> LAST_TRADE_COUNT = new HashMap<>();
 	private static final Map<UUID, String> LAST_BIOME = new HashMap<>();
 
-	/** 红石元件（放下去算"弈"） */
-	private static final Set<net.minecraft.world.level.block.Block> REDSTONE_BLOCKS = Set.of(
-			Blocks.REDSTONE_WIRE, Blocks.REPEATER, Blocks.COMPARATOR, Blocks.PISTON, Blocks.STICKY_PISTON,
-			Blocks.OBSERVER, Blocks.LEVER, Blocks.REDSTONE_TORCH, Blocks.REDSTONE_LAMP,
-			Blocks.DAYLIGHT_DETECTOR, Blocks.TRIPWIRE_HOOK, Blocks.TARGET, Blocks.SCULK_SENSOR);
 
 	/** 服务端：给玩家某条神道加熟练度（超过上限会截断） */
 	public static void gain(ServerPlayer player, PathType type, int amount) {
@@ -141,14 +135,7 @@ public final class PathProficiency {
 				gain(serverPlayer, PathType.XI, PathValues.XI_PER_MUSIC);
 			}
 
-			// 放置方块 → 巧；红石元件额外 → 弈
-			ItemStack stack = player.getItemInHand(hand);
-			if (stack.getItem() instanceof BlockItem blockItem) {
-				gain(serverPlayer, PathType.QIAO, PathValues.QIAO_PER_PLACE);
-				if (REDSTONE_BLOCKS.contains(blockItem.getBlock())) {
-					gain(serverPlayer, PathType.YIX, PathValues.YIX_PER_REDSTONE);
-				}
-			}
+			// 放置方块的成功判定在 BlockItemPlaceMixin 里（这里只处理"使用方块"的行为）
 			return InteractionResult.PASS;
 		});
 
