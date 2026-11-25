@@ -25,8 +25,10 @@ jobs:
       # 直接在 CI 上删掉这行，用 setup-java 装好的 JDK 跑。
       - name: drop machine-specific gradle property
         run: sed -i '/org\.gradle\.java\.home/d' gradle.properties
+      - name: java version
+        run: java -version
       - name: build
-        run: ./gradlew build --stacktrace
+        run: ./gradlew build --stacktrace --no-daemon
       - name: capture build artifacts
         uses: actions/upload-artifact@v7
         with:
