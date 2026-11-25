@@ -3,7 +3,8 @@
 	"package": "com.xishen.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"XishenMixin"
+		"XishenMixin",
+		"ResultSlotMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
