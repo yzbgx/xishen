@@ -68,5 +68,7 @@
   "key.xishen.paths": "Open Paths",
   "category.xishen": "Xishen",
   "gui.xishen.paths.tier": "Tier %s / %s",
-  "gui.xishen.paths.inactive": "Inactive %s / %s"
+  "gui.xishen.paths.inactive": "Inactive %s / %s",
+  "message.xishen.path.activated": "You have awakened the %s!",
+  "message.xishen.path.tier_up": "%s advanced to tier %s"
 }

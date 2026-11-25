@@ -68,5 +68,7 @@
   "key.xishen.paths": "打开神道界面",
   "category.xishen": "戏神",
   "gui.xishen.paths.tier": "第 %s 阶 / %s",
-  "gui.xishen.paths.inactive": "未激活 %s / %s"
+  "gui.xishen.paths.inactive": "未激活 %s / %s",
+  "message.xishen.path.activated": "你觉醒了%s！",
+  "message.xishen.path.tier_up": "%s 提升到第 %s 阶"
 }

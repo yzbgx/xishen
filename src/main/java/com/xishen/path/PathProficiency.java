@@ -82,6 +82,7 @@ public final class PathProficiency {
 		PathData updated = data.addProficiency(type, amount);
 		if (!updated.equals(data)) {
 			PathAttachments.set(player, updated);
+			PathFeedback.onProficiencyChanged(player, type, data.proficiency(type), updated.proficiency(type));
 		}
 	}
 
