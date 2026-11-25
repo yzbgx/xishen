@@ -92,9 +92,9 @@ public final class PathProficiency {
 			if (!(player instanceof ServerPlayer serverPlayer)) {
 				return;
 			}
-			gain(serverPlayer, PathType.LI, 1);
+			gain(serverPlayer, PathType.LI, PathValues.LI_PER_BLOCK);
 			if (state.getBlock() instanceof CropBlock) {
-				gain(serverPlayer, PathType.HUANG, 1);
+				gain(serverPlayer, PathType.HUANG, PathValues.HUANG_PER_CROP);
 			}
 		});
 
@@ -103,13 +103,13 @@ public final class PathProficiency {
 			if (!world.isClientSide && player instanceof ServerPlayer serverPlayer) {
 				ItemStack stack = player.getItemInHand(hand);
 				if (stack.is(Items.ENDER_EYE)) {
-					gain(serverPlayer, PathType.BU, 3);
+					gain(serverPlayer, PathType.BU, PathValues.BU_PER_EYE);
 				}
 				if (stack.is(Items.PAINTING)) {
-					gain(serverPlayer, PathType.QING, 3);
+					gain(serverPlayer, PathType.QING, PathValues.QING_PER_PAINTING);
 				}
 				if (stack.has(net.minecraft.core.component.DataComponents.FOOD)) {
-					gain(serverPlayer, PathType.YI, 2);
+					gain(serverPlayer, PathType.YI, PathValues.YI_PER_EAT);
 				}
 			}
 			return InteractionResultHolder.pass(player.getItemInHand(hand));
@@ -124,25 +124,25 @@ public final class PathProficiency {
 			var state = world.getBlockState(pos);
 
 			if (state.getBlock() instanceof EnchantingTableBlock) {
-				gain(serverPlayer, PathType.SHU, 2);
+				gain(serverPlayer, PathType.SHU, PathValues.SHU_PER_ENCHANT);
 			}
 			if (state.getBlock() instanceof BrewingStandBlock) {
-				gain(serverPlayer, PathType.WU, 2);
+				gain(serverPlayer, PathType.WU, PathValues.WU_PER_BREW);
 			}
 			if (state.is(Blocks.CHEST) || state.is(Blocks.TRAPPED_CHEST) || state.is(Blocks.BARREL)
 					|| state.is(Blocks.SHULKER_BOX)) {
-				gain(serverPlayer, PathType.DAO, 1);
+				gain(serverPlayer, PathType.DAO, PathValues.DAO_PER_CHEST);
 			}
 			if (state.is(Blocks.NOTE_BLOCK) || state.is(Blocks.JUKEBOX)) {
-				gain(serverPlayer, PathType.XI, 2);
+				gain(serverPlayer, PathType.XI, PathValues.XI_PER_MUSIC);
 			}
 
 			// 放置方块 → 巧；红石元件额外 → 弈
 			ItemStack stack = player.getItemInHand(hand);
 			if (stack.getItem() instanceof BlockItem blockItem) {
-				gain(serverPlayer, PathType.QIAO, 1);
+				gain(serverPlayer, PathType.QIAO, PathValues.QIAO_PER_PLACE);
 				if (REDSTONE_BLOCKS.contains(blockItem.getBlock())) {
-					gain(serverPlayer, PathType.YIX, 1);
+					gain(serverPlayer, PathType.YIX, PathValues.YIX_PER_REDSTONE);
 				}
 			}
 			return InteractionResult.PASS;
@@ -153,7 +153,7 @@ public final class PathProficiency {
 			if (!world.isClientSide && player instanceof ServerPlayer serverPlayer
 					&& entity instanceof TamableAnimal tameable && !tameable.isTame()
 					&& !player.getItemInHand(hand).isEmpty()) {
-				gain(serverPlayer, PathType.OU, 2);
+				gain(serverPlayer, PathType.OU, PathValues.OU_PER_TAME);
 			}
 			return InteractionResult.PASS;
 		});
@@ -164,9 +164,9 @@ public final class PathProficiency {
 				return;
 			}
 			if (player.isCrouching()) {
-				gain(player, PathType.CHANG, 5);
+				gain(player, PathType.CHANG, PathValues.CHANG_PER_SNEAK_KILL);
 			} else {
-				gain(player, PathType.BING, 3);
+				gain(player, PathType.BING, PathValues.BING_PER_KILL);
 			}
 		});
 
@@ -182,7 +182,7 @@ public final class PathProficiency {
 					LAST_TRADE_COUNT.put(player.getUUID(), trades);
 				} else if (trades > lastTrades) {
 					LAST_TRADE_COUNT.put(player.getUUID(), trades);
-					gain(player, PathType.HUANG, 2 * (trades - lastTrades));
+					gain(player, PathType.HUANG, PathValues.HUANG_PER_TRADE * (trades - lastTrades));
 				}
 
 				ResourceKey<Biome> biomeKey = player.level().getBiome(player.blockPosition()).unwrapKey().orElse(null);
@@ -192,7 +192,7 @@ public final class PathProficiency {
 					LAST_BIOME.put(player.getUUID(), biome);
 				} else if (!biome.isEmpty() && !biome.equals(lastBiome)) {
 					LAST_BIOME.put(player.getUUID(), biome);
-					gain(player, PathType.BU, 2);
+					gain(player, PathType.BU, PathValues.BU_PER_BIOME);
 				}
 			}
 		});

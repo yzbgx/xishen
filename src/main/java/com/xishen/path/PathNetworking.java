@@ -40,9 +40,6 @@ public final class PathNetworking {
 				context.server().execute(() -> spend(context.player(), payload.pathId())));
 	}
 
-	/** 每次点「+」把 1 点加点换成这么多熟练度 */
-	public static final int PROFICIENCY_PER_POINT = 10;
-
 	/** 服务端校验：有剩余点数、熟练度没满、神道存在 → 扣 1 点加点、熟练度 +10 */
 	private static void spend(ServerPlayer player, String pathId) {
 		PathType type = PathType.byId(pathId);
@@ -53,7 +50,7 @@ public final class PathNetworking {
 		if (data.points() <= 0 || data.proficiency(type) >= PathType.MAX_PROFICIENCY) {
 			return;
 		}
-		PathData updated = data.addProficiency(type, PROFICIENCY_PER_POINT).withPoints(data.points() - 1);
+		PathData updated = data.addProficiency(type, PathValues.PROFICIENCY_PER_POINT).withPoints(data.points() - 1);
 		PathAttachments.set(player, updated);
 	}
 }

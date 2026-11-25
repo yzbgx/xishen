@@ -1,6 +1,7 @@
 package com.xishen.mixin;
 
 import com.xishen.path.PathProficiency;
+import com.xishen.path.PathValues;
 import com.xishen.path.PathType;
 
 import net.minecraft.server.level.ServerPlayer;
@@ -23,7 +24,7 @@ public class ResultSlotMixin {
 	@Inject(method = "onTake", at = @At("HEAD"))
 	private void xishen$onCraft(Player player, ItemStack stack, CallbackInfo ci) {
 		if (player instanceof ServerPlayer serverPlayer && !stack.isEmpty()) {
-			PathProficiency.gain(serverPlayer, PathType.QIAO, 2);
+			PathProficiency.gain(serverPlayer, PathType.QIAO, PathValues.QIAO_PER_CRAFT);
 		}
 	}
 }
