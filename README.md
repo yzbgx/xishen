@@ -318,9 +318,10 @@ MC mod\
 
 | 部分 | 文件 |
 | --- | --- |
-| 14 条神道定义（id、中英文名、代表色、满级 10） | `src\main\java\com\xishen\path\PathType.java` |
+| 14 条神道定义（id、中英文名、代表色、满级 9） | `src\main\java\com\xishen\path\PathType.java` |
 | 玩家数据（14 条等级 + 可用加点，随玩家存档保存、死亡不掉） | `com\xishen\path\PathData.java` |
 | 数据挂载 + 自动同步到客户端 | `com\xishen\path\PathAttachments.java` |
+| 加点的网络包（客户端点 + → 服务端校验扣点） | `com\xishen\path\PathNetworking.java` |
 | 调试指令 | `com\xishen\path\PathCommands.java` |
 | 界面（GUI） | `src\client\java\com\xishen\client\PathScreen.java` |
 
@@ -330,7 +331,10 @@ MC mod\
 - 或者**打开背包**，在背包左侧会多一个「神道」按钮（类似饰品栏 mod 的入口）
 
 界面是参考 Reskillable 的技能页做的：两列、每条神道一个色块 + 名字 + 等级 + 进度条 + 「+」按钮。
-**「+」按钮现在是灰的**——加点的具体规则（怎么获得点数、每级消耗多少、是否要材料/任务）你说过回头再说，所以框架先把入口留好。
+
+- 点「+」会**消耗 1 点加点、该神道 +1 级**（服务端校验，数据自动同步回来）
+- 点数不够或已满级（9 级）时「+」是灰的
+- 加点从哪来（升级给点 / 做任务 / 击杀）还没定，现在只能用指令 `/xishen path points <n>` 给自己发
 
 ### 调试指令（给自己加等级/点数，方便以后做内容时测试）
 

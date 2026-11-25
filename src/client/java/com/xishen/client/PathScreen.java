@@ -2,25 +2,29 @@ package com.xishen.client;
 
 import com.xishen.path.PathAttachments;
 import com.xishen.path.PathData;
+import com.xishen.path.PathNetworking;
 import com.xishen.path.PathType;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * 神道界面（参考 Reskillable 的技能页 + 饰品栏 mod 的入口按钮）。
  *
  * <p>布局：一个面板，14 条神道分两列（每列 7 条），每条显示：
- * 代表色方块 + 神道名 + 当前等级 + 「+」按钮。
+ * 代表色方块 + 神道名 + 当前等级 + 进度条 + 「+」按钮。
  *
- * <p>现在只是框架：加点的具体方式（升级、消耗点数、解锁条件）还没定，
- * 所以「+」按钮暂时是灰的，点不动；数据已经能存能同步了。
+ * <p>点「+」= 消耗 1 点加点、该神道 +1 级（服务端校验，数据自动同步回来）。
+ * 至于加点从哪来（升级/任务/击杀），规则还没定，现在只能用指令给自己发点数。
  */
 public class PathScreen extends Screen {
 	private static final int PANEL_W = 344;
@@ -29,7 +33,7 @@ public class PathScreen extends Screen {
 	private static final int ROWS_PER_COLUMN = 7;
 	private static final int COLUMN_W = 164;
 
-	private final List<Button> plusButtons = new ArrayList<>();
+	private final Map<PathType, Button> plusButtons = new EnumMap<>(PathType.class);
 
 	public PathScreen() {
 		super(Component.translatable("gui.xishen.paths.title"));
@@ -48,11 +52,11 @@ public class PathScreen extends Screen {
 			int x = left + 10 + column * COLUMN_W;
 			int y = top + 30 + row * ROW_H;
 
-			Button plus = Button.builder(Component.literal("+"), button -> {
-				// 加点方式待定：这里先只打印日志，等规则定下来再实现
-			}).bounds(x + 136, y + 5, 18, 18).build();
-			plus.active = false; // 规则未定，先禁用
-			this.plusButtons.add(plus);
+			Button plus = Button.builder(Component.literal("+"), button ->
+					ClientPlayNetworking.send(new PathNetworking.SpendPoint(type.id())))
+					.bounds(x + 136, y + 5, 18, 18)
+					.build();
+			this.plusButtons.put(type, plus);
 			this.addRenderableWidget(plus);
 		}
 
@@ -108,6 +112,12 @@ public class PathScreen extends Screen {
 			if (filled > 0) {
 				graphics.fill(barX, barY, barX + filled, barY + 2, 0xFF000000 | type.color());
 			}
+
+			// 「+」只有在还有点数、且没满级时才能点
+			Button plus = this.plusButtons.get(type);
+			if (plus != null) {
+				plus.active = data.points() > 0 && level < PathType.MAX_LEVEL;
+			}
 		}
 
 		super.render(graphics, mouseX, mouseY, partialTick);
@@ -121,7 +131,7 @@ public class PathScreen extends Screen {
 	}
 
 	private PathData clientData() {
-		Player player = net.minecraft.client.Minecraft.getInstance().player;
+		Player player = Minecraft.getInstance().player;
 		if (player == null) {
 			return PathData.empty();
 		}
